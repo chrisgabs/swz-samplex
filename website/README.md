@@ -9,6 +9,7 @@ This is a web interface for visualizing and exploring similar questions identifi
 - **Search Functionality**: Search across all questions and answers
 - **Exam Filters**: Filter questions by specific exams
 - **Similarity Analysis**: View automatic analysis of how questions are similar or different
+- **Import JSON Data**: Paste your own similar questions JSON data directly in the browser
 
 ## Getting Started
 
@@ -49,6 +50,42 @@ You can open `index.html` directly in your browser. However, some browsers may b
 - **Question Cards**: Click on a question card to expand it and see full details
 - **Similar Questions**: Compare how questions appear across different exams
 
+### Importing Your Own Data
+
+1. Click the "Import JSON Data" button in the dashboard
+2. Paste your JSON data in the provided textarea
+3. Click "Import Data" to load your data into the application
+4. Your imported data will be saved in your browser's localStorage and will persist between sessions
+
+The imported JSON data must follow the same structure as the default similar_questions.json file. The basic structure is:
+
+```json
+[
+  {
+    "number": 1,
+    "question": {
+      "exam1": "Question from exam1",
+      "exam2": "Similar question from exam2"
+    },
+    "choices": {
+      "exam1": { "a": "Choice A", "b": "Choice B", ... },
+      "exam2": { "a": "Choice A", "b": "Choice B", ... }
+    },
+    "answer": {
+      "exam1": "a",
+      "exam2": "b"
+    },
+    "reference": {
+      "exam1": { "number": 10, "section": "Section title", "reference": "Ref" },
+      "exam2": { "number": 15, "section": "Section title", "reference": "Ref" }
+    }
+  },
+  // More question groups...
+]
+```
+
+To reset to the default data, click "Reset to Default Data" in the import modal.
+
 ### Understanding the Interface
 
 - **Question Cards**: Each card represents a group of similar questions across exams
@@ -63,9 +100,11 @@ If you encounter issues:
 1. **JSON Not Loading**: Make sure `similar_questions.json` is in the same directory as the HTML file
 2. **Browser Security Blocking**: Use a web server instead of opening the HTML file directly
 3. **Display Issues**: Try using a modern browser like Chrome, Firefox, or Edge
+4. **Import Errors**: Check that your JSON data follows the correct structure
 
 ## Technology Stack
 
 - HTML5
 - CSS3 with Tailwind CSS
-- Vanilla JavaScript 
+- Vanilla JavaScript
+- LocalStorage for persistence of imported data 

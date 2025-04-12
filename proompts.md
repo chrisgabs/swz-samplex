@@ -1,4 +1,4 @@
-I uploaded a PDF file containing multiple choice questions. Please give me the first 5 questions structured in the following format:
+I uploaded a PDF file containing multiple choice questions. Please give me all questions structured in the following format:
 
 ```
 {
@@ -15,6 +15,9 @@ I uploaded a PDF file containing multiple choice questions. Please give me the f
   "reference": "<page number and short note of where in the PDF the answer is found>"
 }
 ```
+
+For cases where the PDF file contains a question with no contents, ignore the question and proceed to the next one.
+DO NOT STOP generating until all questions are encoded.
 
 
 ----------------------------

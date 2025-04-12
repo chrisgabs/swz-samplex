@@ -1,4 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the app with default data or from localStorage
+    initializeApp();
+    
+    // Setup the import functionality
+    setupImportModal();
+});
+
+function initializeApp() {
+    // Check if we have imported data in localStorage
+    const storedData = localStorage.getItem('importedQuestionData');
+    
+    if (storedData) {
+        try {
+            const parsedData = JSON.parse(storedData);
+            processQuestionData(parsedData);
+        } catch (error) {
+            console.error('Error parsing stored data:', error);
+            // If stored data is corrupt, try to load the default file
+            loadDefaultData();
+        }
+    } else {
+        // Load the default similar_questions.json file
+        loadDefaultData();
+    }
+}
+
+function loadDefaultData() {
     // Fetch the similar questions data
     fetch('similar_questions.json')
         .then(response => {
@@ -8,28 +35,145 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
-            // Update dashboard statistics
-            updateDashboard(data);
-            
-            // Display the questions
-            displayQuestions(data);
-            
-            // Setup search functionality
-            setupSearch(data);
-            
-            // Setup exam filters
-            setupExamFilters(data);
+            processQuestionData(data);
         })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('questionsList').innerHTML = `
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <strong class="font-bold">Error!</strong>
-                    <span class="block sm:inline"> Failed to load question data. Please check that similar_questions.json exists.</span>
+                    <span class="block sm:inline"> Failed to load question data. Please check that similar_questions.json exists, or use the Import button to paste your data.</span>
                 </div>
             `;
         });
-});
+}
+
+function processQuestionData(data) {
+    // Update dashboard statistics
+    updateDashboard(data);
+    
+    // Display the questions
+    displayQuestions(data);
+    
+    // Setup search functionality
+    setupSearch(data);
+    
+    // Setup exam filters
+    setupExamFilters(data);
+}
+
+function setupImportModal() {
+    const importButton = document.getElementById('importButton');
+    const importModal = document.getElementById('importModal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelImport = document.getElementById('cancelImport');
+    const confirmImport = document.getElementById('confirmImport');
+    const jsonInput = document.getElementById('jsonInput');
+    const importError = document.getElementById('importError');
+    
+    // Open the modal
+    importButton.addEventListener('click', () => {
+        importModal.classList.remove('hidden');
+        jsonInput.focus();
+        
+        // Pre-fill with stored data if available
+        const storedData = localStorage.getItem('importedQuestionData');
+        if (storedData) {
+            try {
+                const formatted = JSON.stringify(JSON.parse(storedData), null, 2);
+                jsonInput.value = formatted;
+            } catch (e) {
+                jsonInput.value = '';
+            }
+        }
+    });
+    
+    // Close the modal
+    function closeImportModal() {
+        importModal.classList.add('hidden');
+        importError.classList.add('hidden');
+    }
+    
+    closeModal.addEventListener('click', closeImportModal);
+    cancelImport.addEventListener('click', closeImportModal);
+    
+    // Handle import
+    confirmImport.addEventListener('click', () => {
+        const jsonText = jsonInput.value.trim();
+        
+        if (!jsonText) {
+            importError.textContent = 'Please enter JSON data.';
+            importError.classList.remove('hidden');
+            return;
+        }
+        
+        try {
+            const data = JSON.parse(jsonText);
+            
+            // Basic validation to ensure it has the right structure
+            if (!Array.isArray(data) || data.length === 0) {
+                throw new Error('JSON data must be an array with at least one question group.');
+            }
+            
+            // Check if first item has the expected properties
+            const firstItem = data[0];
+            if (!firstItem.question || !firstItem.choices || !firstItem.answer || !firstItem.reference) {
+                throw new Error('JSON data does not match the expected structure.');
+            }
+            
+            // Store in localStorage
+            localStorage.setItem('importedQuestionData', jsonText);
+            
+            // Process the data
+            processQuestionData(data);
+            
+            // Close the modal
+            closeImportModal();
+            
+            // Show success notification
+            showNotification('Data imported successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Import error:', error);
+            importError.textContent = `Invalid JSON format: ${error.message}`;
+            importError.classList.remove('hidden');
+        }
+    });
+    
+    // Allow clearing imported data
+    const clearImportedData = document.createElement('button');
+    clearImportedData.textContent = 'Reset to Default Data';
+    clearImportedData.className = 'ml-2 text-sm text-red-600 hover:text-red-800 hover:underline';
+    clearImportedData.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your imported data and reload the default data?')) {
+            localStorage.removeItem('importedQuestionData');
+            closeImportModal();
+            loadDefaultData();
+            showNotification('Reset to default data.', 'info');
+        }
+    });
+    
+    // Add the clear button to the modal
+    document.querySelector('#importModal .flex.items-center.justify-between div:last-child').prepend(clearImportedData);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
 
 function updateDashboard(questions) {
     // Get all unique exams across all questions
@@ -306,10 +450,22 @@ function setupExamFilters(questions) {
             
             // Filter questions
             const filter = this.dataset.filter;
-            if (filter === 'all') {
-                displayQuestions(questions);
+            
+            // Get the current data (either from localStorage or default)
+            let currentData;
+            const storedData = localStorage.getItem('importedQuestionData');
+            if (storedData) {
+                currentData = JSON.parse(storedData);
             } else {
-                const filtered = questions.filter(q => Object.keys(q.question).includes(filter));
+                // This will need to re-fetch the data
+                // For simplicity, we're re-using the questions parameter
+                currentData = questions;
+            }
+            
+            if (filter === 'all') {
+                displayQuestions(currentData);
+            } else {
+                const filtered = currentData.filter(q => Object.keys(q.question).includes(filter));
                 displayQuestions(filtered);
             }
         });
@@ -322,12 +478,22 @@ function setupSearch(questions) {
     searchInput.addEventListener('input', () => {
         const searchTerm = searchInput.value.toLowerCase().trim();
         
+        // Get the current data (either from localStorage or default)
+        let currentData;
+        const storedData = localStorage.getItem('importedQuestionData');
+        if (storedData) {
+            currentData = JSON.parse(storedData);
+        } else {
+            // Re-use the questions parameter
+            currentData = questions;
+        }
+        
         if (searchTerm === '') {
-            displayQuestions(questions);
+            displayQuestions(currentData);
             return;
         }
         
-        const filteredQuestions = questions.filter(q => {
+        const filteredQuestions = currentData.filter(q => {
             // Search in all exam questions
             return Object.values(q.question).some(text => 
                 text.toLowerCase().includes(searchTerm)

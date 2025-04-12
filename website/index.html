@@ -16,7 +16,15 @@
 
         <!-- Dashboard Section -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Dashboard</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Dashboard</h2>
+                <button id="importButton" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                    </svg>
+                    Import JSON Data
+                </button>
+            </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
@@ -54,6 +62,46 @@
         <div id="questionsList" class="space-y-6">
             <!-- Questions will be loaded here via JavaScript -->
             <div class="text-center py-10 text-gray-500">Loading questions...</div>
+        </div>
+    </div>
+    
+    <!-- Import Modal -->
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full p-6 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">Import Similar Questions JSON Data</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-gray-600 mb-2">Paste your JSON data below. The format should match the structure of the similar_questions.json file.</p>
+                <textarea id="jsonInput" class="w-full h-64 px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm" placeholder='[
+  {
+    "number": 1,
+    "question": {
+      "exam1": "Question from exam1",
+      "exam2": "Similar question from exam2"
+    },
+    "choices": { ... },
+    "answer": { ... },
+    "reference": { ... }
+  }
+]'></textarea>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div id="importError" class="text-red-600 text-sm hidden">
+                    Invalid JSON format. Please check your input.
+                </div>
+                <div class="flex space-x-2">
+                    <button id="cancelImport" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">Cancel</button>
+                    <button id="confirmImport" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Import Data</button>
+                </div>
+            </div>
         </div>
     </div>
     

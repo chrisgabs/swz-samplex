@@ -106,4 +106,29 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
+}
+
+/* Import modal styles */
+#importModal {
+    transition: opacity 0.3s ease;
+}
+
+#importModal.hidden {
+    display: none;
+    opacity: 0;
+}
+
+#jsonInput {
+    font-family: monospace;
+    resize: vertical;
+}
+
+/* Notification animations */
+.fade-out {
+    animation: fadeOut 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
 } 
