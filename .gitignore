@@ -1,0 +1,4 @@
+./dataset/*
+./python_analyzer/sample_exam*
+./python_analyzer/similar_questions.json
+./website/similar_questions.json
