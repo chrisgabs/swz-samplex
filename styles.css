@@ -1,0 +1,109 @@
+/* Additional styles beyond Tailwind */
+.exam-pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.exam-pill-1 {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.exam-pill-2 {
+    background-color: #E9D5FF;
+    color: #6B21A8;
+}
+
+.exam-pill-3 {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+.highlighted {
+    background-color: #FEFCE8;
+    border-left: 4px solid #EAB308;
+    padding-left: 1rem;
+}
+
+.choice-correct {
+    border-left: 3px solid #22C55E;
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.exam-container {
+    position: relative;
+}
+
+.exam-container:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 2rem;
+    right: 2rem;
+    height: 1px;
+    background-color: #E5E7EB;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.expanded .collapsible-content {
+    max-height: 2000px;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Active filter style */
+.active-filter {
+    background-color: #3B82F6 !important;
+    color: white !important;
+}
+
+/* Hover effects */
+.toggle-question:hover {
+    background-color: #F9FAFB;
+    border-radius: 0.5rem;
+}
+
+/* Rotate animation for toggle arrow */
+.toggle-question svg {
+    transition: transform 0.3s ease;
+}
+
+.toggle-question svg.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+} 

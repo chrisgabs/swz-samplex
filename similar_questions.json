@@ -2,100 +2,681 @@
   {
     "number": 1,
     "question": {
-      "sample_exam1": "Which of the following is a symptom of acute appendicitis?",
-      "sample_exam2": "A 45-year-old patient presents with pain in the lower right abdomen. Which of the following is most likely to be causing this symptom?",
-      "sample_exam3": "What is the typical clinical presentation of acute appendicitis?"
+      "sample_exam1": "An obese 25-year-old female presents with infertility problems. She has a history of oligomenorrhea. PE reveals hirsutism on the face. Ultrasound reveals an enlarged right ovary. What would be the expected laboratory results?",
+      "sample_exam3": "A 25-year-old obese female reports infertility with hirsutism. She has a history of oligomenorrhea. Ultrasound shows an enlarged right ovary which was diagnosed as polycystic ovarian syndrome. What are the expected laboratory results?"
     },
     "choices": {
       "sample_exam1": {
-        "a": "Pain in the right lower quadrant",
-        "b": "Pain in the left lower quadrant",
-        "c": "Pain in the epigastric region",
-        "d": "Pain in the left upper quadrant"
-      },
-      "sample_exam2": {
-        "a": "Appendicitis",
-        "b": "Diverticulitis",
-        "c": "Gastritis",
-        "d": "Pancreatitis"
+        "a": "Serum FSH - increased; Serum LH - increased; Serum Testosterone - increased; TSH - normal",
+        "b": "Serum FSH - decreased; Serum LH - decreased; Serum Testosterone decreased; TSH - decreased",
+        "c": "Serum FSH - increased; Serum LH - decreased;",
+        "d": "Serum FSH - decreased; Serum LH - increased; Serum Testosterone - normal; TSH - increased"
       },
       "sample_exam3": {
-        "a": "Diffuse abdominal pain followed by localization to the right lower quadrant",
-        "b": "Localized pain in the left lower quadrant",
-        "c": "Severe pain in the epigastrium radiating to the back",
-        "d": "Periumbilical pain radiating to the left upper quadrant"
+        "a": "Increased LH, Increased FSH, Increased Testosterone, Normal TSH",
+        "b": "Increased LH, Increased FSH, Decreased Testosterone, Normal TSH",
+        "c": "Increased LH, Decreased FSH, Decreased Testosterone, Normal TSH",
+        "d": "Increased LH, Decreased FSH, Increased Testosterone, Normal TSH"
       }
     },
     "answer": {
-      "sample_exam1": "a",
-      "sample_exam2": "a",
-      "sample_exam3": "a"
+      "sample_exam1": "D",
+      "sample_exam3": "D"
     },
     "reference": {
       "sample_exam1": {
-        "number": 1,
-        "section": "Gastrointestinal Disorders",
-        "reference": "p.45 - Clinical presentation of appendicitis"
-      },
-      "sample_exam2": {
-        "number": 1,
-        "section": "Acute Abdominal Conditions",
-        "reference": "p.67 - Differential diagnosis of abdominal pain"
+        "number": 18,
+        "section": "Head and Neck I & II",
+        "reference": "3"
       },
       "sample_exam3": {
-        "number": 1,
-        "section": "Surgical Emergencies",
-        "reference": "p.89 - Acute abdominal pathologies"
+        "number": 48,
+        "section": "6.02 Female Genitalia IV: Ovary",
+        "reference": "7"
       }
     }
   },
   {
     "number": 2,
     "question": {
-      "sample_exam1": "What is the most common causative agent of bacterial meningitis in adults?",
-      "sample_exam2": "In adults with bacterial meningitis, which pathogen is most frequently isolated from CSF cultures?",
-      "sample_exam3": "Which organism is the leading cause of acute bacterial meningitis in adults over 50 years of age?"
+      "sample_exam1": "What part of the tooth, when inflamed, can result in the development of radicular cyst",
+      "sample_exam2": "Which part of the tooth, when inflamed, can result in the development of a radicular cyst?"
     },
     "choices": {
       "sample_exam1": {
-        "a": "Haemophilus influenzae",
-        "b": "Streptococcus pneumoniae",
-        "c": "Neisseria meningitidis",
-        "d": "Listeria monocytogenes"
+        "a": "Dentin",
+        "b": "Enamel",
+        "c": "Pulp",
+        "d": "Gingiva"
       },
       "sample_exam2": {
-        "a": "H. influenzae",
-        "b": "S. pneumoniae",
-        "c": "N. meningitidis",
-        "d": "L. monocytogenes"
-      },
-      "sample_exam3": {
-        "a": "E. coli",
-        "b": "S. pneumoniae",
-        "c": "N. meningitidis",
-        "d": "Group B Streptococcus"
+        "a": "Cementum",
+        "b": "Dentin",
+        "c": "Pulp",
+        "d": "Gingiva"
       }
     },
     "answer": {
-      "sample_exam1": "b",
-      "sample_exam2": "b",
-      "sample_exam3": "b"
+      "sample_exam1": "C",
+      "sample_exam2": "c"
     },
     "reference": {
       "sample_exam1": {
-        "number": 2,
-        "section": "Infectious Diseases",
-        "reference": "p.120 - Bacterial meningitis pathogens by age group"
+        "number": 21,
+        "section": "Head and Neck I & II",
+        "reference": "4"
       },
       "sample_exam2": {
-        "number": 2,
-        "section": "CNS Infections",
-        "reference": "p.93 - Microbiology of meningitis"
+        "number": 7,
+        "section": "Head & Neck Pathology I: Oral & Neck",
+        "reference": "2/18 C- Radicular/Periapical cysts occur due to the inflammation of dental pulp related to caries or trauma"
+      }
+    }
+  },
+  {
+    "number": 3,
+    "question": {
+      "sample_exam1": "Which part of the tooth is composed of specialized connective tissue and makes up most of the hard part of the tooth?",
+      "sample_exam2": "Which part of the tooth is composed of specialized connective tissue and makes up most of the hard part of the tooth?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Cementum",
+        "b": "Dentin",
+        "c": "Enamel",
+        "d": "Periodontal Ligament"
+      },
+      "sample_exam2": {
+        "a": "Enamel",
+        "b": "Dentin",
+        "c": "Cementum",
+        "d": "Pulp Chamber"
+      }
+    },
+    "answer": {
+      "sample_exam1": "B",
+      "sample_exam2": "b"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 23,
+        "section": "Head and Neck I & II",
+        "reference": "4"
+      },
+      "sample_exam2": {
+        "number": 3,
+        "section": "Head & Neck Pathology I: Oral & Neck",
+        "reference": "1/18 B- Specialized connective tissue making up most part of the tooth"
+      }
+    }
+  },
+  {
+    "number": 4,
+    "question": {
+      "sample_exam1": "Neoplasm associated with viral infection?",
+      "sample_exam2": "Which of the following neoplasms have associations with certain viral infections?",
+      "sample_exam3": "Clinical features associated with renal cell carcinoma:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Nasopharyngeal carcinoma",
+        "b": "Squamous cell carcinoma",
+        "c": "Sinonasal papilloma",
+        "d": "All of the above"
+      },
+      "sample_exam2": {
+        "a": "Nasopharyngeal Carcinoma",
+        "b": "Sinonasal Papilloma",
+        "c": "Squamous Cell Carcinoma",
+        "d": "All of the above"
+      },
+      "sample_exam3": {
+        "a": "Painless hematuria",
+        "b": "Paraneoplastic syndrome",
+        "c": "Angioinvasion",
+        "d": "All of the above",
+        "e": "A and B only"
+      }
+    },
+    "answer": {
+      "sample_exam1": "D",
+      "sample_exam2": "d",
+      "sample_exam3": "D"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 24,
+        "section": "Head and Neck I & II",
+        "reference": "5"
+      },
+      "sample_exam2": {
+        "number": 16,
+        "section": "Head & Neck Pathology II: Nose, Ear, Salivary Glands",
+        "reference": "3/18 D- All of the above"
+      },
+      "sample_exam3": {
+        "number": 35,
+        "section": "LE6",
+        "reference": "5"
+      }
+    }
+  },
+  {
+    "number": 5,
+    "question": {
+      "sample_exam1": "Which of the following patients best fit the clinical profile of a person with Warthin's tumor?",
+      "sample_exam2": "Which of the following patients best fit the clinical profile of a person with Warthin's tumor?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "40 year old male with midline neck mass associated with dysphagia",
+        "b": "60 year old female, asymptomatic, with enlarged sublingual mass",
+        "c": "45 year old male with enlarged submandibular mass",
+        "d": "57 year old male smoker with bilateral parotid mass"
+      },
+      "sample_exam2": {
+        "a": "40 year old male with midline neck mass associated with dysphagia",
+        "b": "60 year old female, asymptomatic, with enlarged sublingual mass",
+        "c": "45 year old male with enlarged submandibular mass",
+        "d": "57 year old male with bilateral parotid mass"
+      }
+    },
+    "answer": {
+      "sample_exam1": "D",
+      "sample_exam2": "d"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 26,
+        "section": "Head and Neck I & II",
+        "reference": "5"
+      },
+      "sample_exam2": {
+        "number": 5,
+        "section": "Head & Neck Pathology I: Oral & Neck",
+        "reference": "1/18 Characteristics of Warthin Tumor:\n-  There is 8x more risk of developing this tumor in male smokers"
+      }
+    }
+  },
+  {
+    "number": 6,
+    "question": {
+      "sample_exam1": "Which of the following is a feature shared by BOTH branchial cyst and thyroglossal duct cyst?",
+      "sample_exam2": "Which of the following is a feature shared by branchial cyst and thyroglossal duct cyst?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Cyst content may be clear and mucinous or viscous fluid",
+        "b": "Found in upper lateral aspect of the neck",
+        "c": "Originate from neuroendocrine cells",
+        "d": "Presence of lymphoid follicles with germinal centers"
+      },
+      "sample_exam2": {
+        "a": "Cyst content may be clear and mucinous or viscous fluid",
+        "b": "Found in upper lateral aspect of the neck",
+        "c": "Originate from neuroendocrine cells",
+        "d": "Presence of lymphoid follicles with germinal centers"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam2": "d"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 27,
+        "section": "Head and Neck I & II",
+        "reference": "5"
+      },
+      "sample_exam2": {
+        "number": 6,
+        "section": "Head & Neck Pathology I: Oral & Neck",
+        "reference": "1/18 D- Branchial cyst: Lymphoid tissue with formation of prominent germinal centers; Thyroglossal Duct Cyst: May have lymphoid aggregates or"
+      }
+    }
+  },
+  {
+    "number": 7,
+    "question": {
+      "sample_exam1": "A 60 yr old female actress complains of a 2.0 cm, slow-growing, left buccal mucosa mass. She also complains of dull, constant pain. Excision was done and microscopy revealed tubular and cribriform structures with microcysts lined by small cells with dark, compact nuclei. TRUE of this neoplasm:",
+      "sample_exam2": "A 60-year-old female actress complains of a 2.0 cm, slow-growing, left buccal mucosa mass. She also complains of dull, constant pain. Excision was done and microscopy revealed tubular and cribriform structures with microcysts lined by small cells with dark, compact nuclei. TRUE of this neoplasm:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Lymphovascular invasion can account for the pain symptoms",
+        "b": "It is the most common malignant salivary gland neoplasm",
+        "c": "Commonly metastasizes to the lymph node",
+        "d": "It is a slow-growing salivary gland tumor"
+      },
+      "sample_exam2": {
+        "a": "Has a propensity to recur locally",
+        "b": "Lymphovascular invasion can account for the pain symptoms",
+        "c": "It is the most common malignant salivary gland neoplasm",
+        "d": "It is a slow-growing salivary gland tumor"
+      }
+    },
+    "answer": {
+      "sample_exam1": "D",
+      "sample_exam2": "d"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 29,
+        "section": "Head and Neck I & II",
+        "reference": "6"
+      },
+      "sample_exam2": {
+        "number": 17,
+        "section": "Head & Neck Pathology II: Nose, Ear, Salivary Glands",
+        "reference": "3/18 D - Adenoid Cystic Carcinoma  It is a slow-growing salivary gland tumor"
+      }
+    }
+  },
+  {
+    "number": 8,
+    "question": {
+      "sample_exam1": "A 19 yr old male develops painful vesicles near his mouth, along with low-grade fever and palpable submandibular lymph nodes. The attending physician noted grouped vesicles on an erythematous base. Tzanck smear was done on the vesicle fluid. The following histologic findings will suggest an HSV infection, EXCEPT:",
+      "sample_exam2": "A 19-year-old male develops painful vesicles near his mouth, along with low grade fever and palpable submandibular lymph nodes. The attending physician noted grouped vesicles on an erythematous base. Tzanck smear was done on the vesicle fluid. The following histologic findings will suggest an HSV infection, EXCEPT:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Acantholytic cells",
+        "b": "Koilocytes",
+        "c": "Intranuclear eosinophilic inclusion bodies",
+        "d": "Multinucleated giant cells"
+      },
+      "sample_exam2": {
+        "a": "Acantholytic cells",
+        "b": "Koilocytes",
+        "c": "Intranuclear eosinophilic inclusion bodies",
+        "d": "Multinucleated Giant Cells",
+        "e": "All of the above findings are correct"
+      }
+    },
+    "answer": {
+      "sample_exam1": "B",
+      "sample_exam2": "b"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 30,
+        "section": "Head and Neck I & II",
+        "reference": "6"
+      },
+      "sample_exam2": {
+        "number": 18,
+        "section": "Head & Neck Pathology II: Nose, Ear, Salivary Glands",
+        "reference": "3/18 Herpes Simplex Infection:\n- Acantholysis-Dissolution of the intercellular bridges that connect squamous epithelial cells\n- Intranuclear Viral Inclusion-Cowdry Type A inclusion bodies\n- Multinucleated Giant Cells (Polykaryon)- via Tzanck Smear"
+      }
+    }
+  },
+  {
+    "number": 9,
+    "question": {
+      "sample_exam1": "What is the pathogenesis of Marble Bone Disease?",
+      "sample_exam3": "What is the pathogenesis of osteopetrosis?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Poor osteoclast function due to a mutation in carbonic anhydrase 2 (CA2)",
+        "b": "Defect in mineralization of osteoid",
+        "c": "Reduced trabeculation of bone mass",
+        "d": "Imbalance in osteoblast and osteoclast activity with an osteoclastic activity, mixed with osteoblastic/osteoclastic activity, followed by an osteoblastic activity"
+      },
+      "sample_exam3": {
+        "a": "Impaired osteoclast function due to the mutation in CLCN7",
+        "b": "Defect in mineralization of osteoid",
+        "c": "Reduced trabeculation of bone mass",
+        "d": "Imbalance in osteoblast and osteoclast activity with an osteoclastic activity, mixed with osteoblastic/ osteoclastic activity, followed by an osteoblastic activity"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam3": "A"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 33,
+        "section": "Bones, Soft Tissue & Joints Pathology",
+        "reference": "6"
+      },
+      "sample_exam3": {
+        "number": 77,
+        "section": "6.07 Bones Pathology - Dy-Ledesma",
+        "reference": "11"
+      }
+    }
+  },
+  {
+    "number": 10,
+    "question": {
+      "sample_exam1": "A 38 yr old woman has had episodes of numbness and tingling in both hands for 5 months. The problem typically occurs near the end of the day and makes it difficult for her to use the computer keyboard. The thumb and first two fingers are most affected. There is no pain or swelling, and she does not recall any trauma to the upper extremities. On physical examination, thenar muscle atrophy seems to be present. Which of the following conditions is most likely causing her problem?",
+      "sample_exam3": "The department secretary has been complaining of numbness in both of her hands for the past 3 months. The problem typically occurs near the end of the day and makes it difficult for her to use the computer keyboard. The thumb and first two fingers are most affected. Which of the following conditions is most likely causing her problem?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Repetitive stress injury",
+        "b": "Autoantibodies",
+        "c": "Diabetes mellitus",
+        "d": "Traumatic neuroma"
+      },
+      "sample_exam3": {
+        "a": "Repetitive stress injury",
+        "b": "Rheumatoid arthritis",
+        "c": "Diabetes mellitus",
+        "d": "Myasthenia gravis"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam3": "A"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 49,
+        "section": "Musculoskeletal and PNS Pathology",
+        "reference": "11"
+      },
+      "sample_exam3": {
+        "number": 67,
+        "section": "6.05 Peripheral Nervous System Pathology - Dy-Ledesma",
+        "reference": "10"
+      }
+    }
+  },
+  {
+    "number": 11,
+    "question": {
+      "sample_exam1": "A female medical student has had decreased vision on the left for 6 months. On physical examination. there is papilledema on the right. She has 14 scattered, 2-to-5 cm flat, hyperpigmented skin lesions with irregular borders on the extremities and torso. CT scan of the head shows a mass in the region of the right optic nerve. An optic nerve glioma is excised. Eight months later, she returns for a follow-up examination, and a mass is palpated on the right wrist. Histologic examination of the mass is most likely to show which of the following neoplasms?",
+      "sample_exam3": "A 23F with decreased visual acuity on L eye for 6 months. PE showed papilledema on R, several scattered 2-5cm flat hyperpigmented skin lesions with irregular border on extremity and trunk. CT scan showed R optic nerve glioma which was excised. 8 months later on follow up, a mass on Right wrist was noted. Which of the following neoplasms would show on histopathology?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Schwannoma",
+        "b": "Lipoma",
+        "c": "Fibrosarcoma",
+        "d": "Meningioma"
+      },
+      "sample_exam3": {
+        "a": "Schwannoma",
+        "b": "Lipoma",
+        "c": "Fibrosarcoma",
+        "d": "Meningioma"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam3": "A"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 56,
+        "section": "Bones, Soft Tissue & Joints Pathology",
+        "reference": "13"
+      },
+      "sample_exam3": {
+        "number": 66,
+        "section": "6.05 Peripheral Nervous System Pathology - Dy-Ledesma",
+        "reference": "10"
+      }
+    }
+  },
+  {
+    "number": 12,
+    "question": {
+      "sample_exam1": "Which of the following is NOT a microglial response to injury?",
+      "sample_exam3": "The following tissue reactions implies chronic response to glomerular injury, EXCEPT:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Gliosis",
+        "b": "Neuronophagia",
+        "c": "Microglial Nodule",
+        "d": "Foamy Macrophages"
+      },
+      "sample_exam3": {
+        "a": "Hypercellularity",
+        "b": "Hyalinosis",
+        "c": "Basement membrane thickening",
+        "d": "Sclerosis"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam3": "A"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 81,
+        "section": "Skin Pathology",
+        "reference": "18"
+      },
+      "sample_exam3": {
+        "number": 31,
+        "section": "LE6",
+        "reference": "5"
+      }
+    }
+  },
+  {
+    "number": 13,
+    "question": {
+      "sample_exam1": "Which of the following is TRUE of this condition?",
+      "sample_exam3": "The following statements are true of melanoma, EXCEPT:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Exposure to UV radiation in sunlight is a strong risk factor",
+        "b": "Tumors exhibiting a horizontal spread of growth have a high metastatic potential",
+        "c": "Numerous mitotic figures portends a favorable prognosis",
+        "d": "Melanocytic nevus always progresses to melanoma"
+      },
+      "sample_exam3": {
+        "a": "Neurotization of tumor cells is present",
+        "b": "The vertical growth phase occurs when tumor cells invade downward into the deep dermis",
+        "c": "The tumor cells in the horizontal growth phase lack the capacity to metastasize",
+        "d": "Sporadic cases are linked to mutations due to exposure to UV radiation in sunlight"
+      }
+    },
+    "answer": {
+      "sample_exam1": "A",
+      "sample_exam3": "A"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 98,
+        "section": "Skin Pathology",
+        "reference": "21"
+      },
+      "sample_exam3": {
+        "number": 143,
+        "section": "6.14 Skin Pathology- Caindec",
+        "reference": "19"
+      }
+    }
+  },
+  {
+    "number": 14,
+    "question": {
+      "sample_exam1": "Which of the following characterizes pemphigus vulgaris?",
+      "sample_exam3": "A 40-year-old male presents with vesicles and bulla that"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Tense bullae (blisters that do not rupture easily)",
+        "b": "Linear pattern of immunofluorescence",
+        "c": "Autoantibodies against desmosomes",
+        "d": "Subepidermal blister"
+      },
+      "sample_exam3": {
+        "a": "Dermatitis herpetiformis",
+        "b": "Epidermolysis bullosa",
+        "c": "Pemphigus vulgaris",
+        "d": "Bullous pemphigoid"
+      }
+    },
+    "answer": {
+      "sample_exam1": "C",
+      "sample_exam3": "C"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 105,
+        "section": "Skin Pathology",
+        "reference": "22"
+      },
+      "sample_exam3": {
+        "number": 144,
+        "section": "6.14 Skin Pathology- Caindec",
+        "reference": "20"
+      }
+    }
+  },
+  {
+    "number": 15,
+    "question": {
+      "sample_exam1": "A 20 yr old man has bacterial endocarditis with a lesion in the right basal ganglia. Which of the following could be the type of brain lesion present?",
+      "sample_exam3": "A 25-year-old female patient is diagnosed with PID. The patient should know the following, EXCEPT:"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Tuberculoma",
+        "b": "Gumma",
+        "c": "Abscess",
+        "d": "Encephalitis"
+      },
+      "sample_exam3": {
+        "a": "Infertility",
+        "b": "Tubo-ovarian abscess",
+        "c": "Tubal adenocarcinoma",
+        "d": "Ectopic pregnancy"
+      }
+    },
+    "answer": {
+      "sample_exam1": "C",
+      "sample_exam3": "C"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 111,
+        "section": "Viral and Bacterial CNS infections",
+        "reference": "24"
+      },
+      "sample_exam3": {
+        "number": 41,
+        "section": "LE6",
+        "reference": "6"
+      }
+    }
+  },
+  {
+    "number": 16,
+    "question": {
+      "sample_exam2": "A 52-year-old male complains of recurrent bleeding gums. Examination showed a red gingival lesion. Biopsy showed squamous erosion with full-thickness dysplasia and severe vascular dilation. What is the diagnosis?",
+      "sample_exam3": "A 52-year-old male complains of recurrent bleeding gums. Examination showed a red gingival lesion. Biopsy showed squamous erosion with full-thickness dysplasia and severe vascular dilation. What is the diagnosis?"
+    },
+    "choices": {
+      "sample_exam2": {
+        "a": "Erythroplakia",
+        "b": "Gingivitis",
+        "c": "Invasive squamous cell carcinoma",
+        "d": "Leukoplakia"
+      },
+      "sample_exam3": {
+        "a": "Gingivitis",
+        "b": "Invasive squamous cell carcinoma",
+        "c": "Erythroplakia",
+        "d": "Leukoplakia"
+      }
+    },
+    "answer": {
+      "sample_exam2": "a",
+      "sample_exam3": "C"
+    },
+    "reference": {
+      "sample_exam2": {
+        "number": 13,
+        "section": "Head & Neck Pathology I: Oral & Neck",
+        "reference": "2/18 A- AKA Dysplastic leukoplakia characterized by Red, velvety, possibly eroded area within the oral cavity that usually remains level with or may be slightly depressed relative to the surrounding mucosa. 50% risk of malignant transformation."
       },
       "sample_exam3": {
         "number": 2,
-        "section": "Neurological Infections",
-        "reference": "p.145 - Age-related pathogens in CNS infections"
+        "section": "LE6",
+        "reference": "1"
+      }
+    }
+  },
+  {
+    "number": 17,
+    "question": {
+      "sample_exam2": "A 37-year-old male is brought to the emergency room by his wife because he started to vomit bright red blood at home. Over the past year, he has frequently complained of abdominal pain while eating a meal, and, as such, has lost about 40 lbs. He has no past medical history and is on no medications. He consumes about 1 beer per day and has a 10-pack per-year history of smoking. Of the following, what is the most likely source of his bleeding?",
+      "sample_exam3": "A 55-year-old male alcoholic is brought to the emergency room by his wife because he started to vomit bright red blood at home. Over the past year, he has frequently complained of abdominal pain while eating a meal, and, as such, has lost about 40 lbs. He has no past medical history and is on no medications. He consumes about 1 beer per day and has a 10-pack per-year history of smoking. Of the following, what is the most likely source of his bleeding? (unsure)"
+    },
+    "choices": {
+      "sample_exam2": {
+        "a": "Esophageal Varices",
+        "b": "Eroded Gastric Adenocarcinoma",
+        "c": "Gastric Peptic Ulcer",
+        "d": "Mallory-Weiss Laceration"
+      },
+      "sample_exam3": {
+        "a": "Esophageal Varices",
+        "b": "Eroded Gastric Adenocarcinoma",
+        "c": "Gastric Peptic Ulcer",
+        "d": "Mallory-Weiss Laceration"
+      }
+    },
+    "answer": {
+      "sample_exam2": "c",
+      "sample_exam3": "D"
+    },
+    "reference": {
+      "sample_exam2": {
+        "number": 37,
+        "section": "GIT Pathology II: Stomach",
+        "reference": "7/18 Pertinent data:\n- Hematemesis\n- Abdominal pain while eating a meal\n- 1 beer per day\n- 10 pack per year history of smoking"
+      },
+      "sample_exam3": {
+        "number": 7,
+        "section": "LE6",
+        "reference": "2"
+      }
+    }
+  },
+  {
+    "number": 18,
+    "question": {
+      "sample_exam2": "A 47-year-old male has had abdominal pain for about 4 months. His physician has prescribed omeprazole, which has not apparently worked. He sought consult again, this time complaining of a nodule at his umbilicus. He has no other significant past medical history. Biopsy of the nodule reveals neoplastic cells with a signet ring appearance. He undergoes an exploratory laparotomy. Of the following, which is the surgeon likely to find?",
+      "sample_exam3": "A 55-year-old male has had abdominal pain for about 4 months. His physician has prescribed omeprazole, which has not apparently worked. He sought consult again, this time complaining of a nodule at his umbilicus. He has no other significant past medical history. Biopsy of the nodule reveals neoplastic cells with a signet ring appearance. He undergoes an exploratory laparotomy. Of the following, which is the surgeon likely to find?"
+    },
+    "choices": {
+      "sample_exam2": {
+        "a": "A large ulcerated mass in the body of the stomach",
+        "b": "Diffuse thickening of the wall of the stomach",
+        "c": "A red and yellow mass in the cortex of a kidney",
+        "d": "An ulcerated mass in the large intestine"
+      },
+      "sample_exam3": {
+        "a": "A large ulcerated mass in the body of the stomach",
+        "b": "Diffuse thickening of the wall of the stomach",
+        "c": "A red and yellow mass in the cortex of a kidney",
+        "d": "An ulcerated mass in the large intestine"
+      }
+    },
+    "answer": {
+      "sample_exam2": "b",
+      "sample_exam3": "D"
+    },
+    "reference": {
+      "sample_exam2": {
+        "number": 38,
+        "section": "GIT Pathology II: Stomach",
+        "reference": "7/18 Pertinent data:\n- Nodule at umbilicus reveals neoplastic cells with signet ring appearance \n- Primary impression: Adenocarcinoma, Diffuse type"
+      },
+      "sample_exam3": {
+        "number": 8,
+        "section": "LE6",
+        "reference": "2"
       }
     }
   }
