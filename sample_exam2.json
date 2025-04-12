@@ -1,0 +1,80 @@
+[
+  {
+    "number": 1,
+    "question": "A 45-year-old patient presents with pain in the lower right abdomen. Which of the following is most likely to be causing this symptom?",
+    "choices": {
+      "a": "Appendicitis",
+      "b": "Diverticulitis",
+      "c": "Gastritis",
+      "d": "Pancreatitis"
+    },
+    "answer": "a",
+    "section": "Acute Abdominal Conditions",
+    "reference": "p.67 - Differential diagnosis of abdominal pain"
+  },
+  {
+    "number": 2,
+    "question": "In adults with bacterial meningitis, which pathogen is most frequently isolated from CSF cultures?",
+    "choices": {
+      "a": "H. influenzae",
+      "b": "S. pneumoniae",
+      "c": "N. meningitidis",
+      "d": "L. monocytogenes"
+    },
+    "answer": "b",
+    "section": "CNS Infections",
+    "reference": "p.93 - Microbiology of meningitis"
+  },
+  {
+    "number": 3,
+    "question": "A 6-year-old child presents with fever and a rash that started on the face and is now spreading to the trunk and extremities. The rash is maculopapular. What is the most likely diagnosis?",
+    "choices": {
+      "a": "Chickenpox",
+      "b": "Measles",
+      "c": "Scarlet fever",
+      "d": "Erythema multiforme"
+    },
+    "answer": "b",
+    "section": "Pediatric Infectious Diseases",
+    "reference": "p.112 - Viral exanthems in children"
+  },
+  {
+    "number": 4,
+    "question": "A 28-year-old patient with a history of severe malaria is prescribed antimalarial medication. The patient has G6PD deficiency. Which of the following medications should be avoided?",
+    "choices": {
+      "a": "Chloroquine",
+      "b": "Atovaquone",
+      "c": "Primaquine",
+      "d": "Mefloquine"
+    },
+    "answer": "c",
+    "section": "Drug Contraindications",
+    "reference": "p.178 - Antimalarial therapy in special populations"
+  },
+  {
+    "number": 5,
+    "question": "A 23-year-old student presents with fever, cough, and chest pain. Chest X-ray reveals a lobar infiltrate consistent with community-acquired pneumonia. What is the most appropriate initial antibiotic therapy?",
+    "choices": {
+      "a": "Amoxicillin",
+      "b": "Trimethoprim-sulfamethoxazole",
+      "c": "Azithromycin",
+      "d": "Ciprofloxacin"
+    },
+    "answer": "c",
+    "section": "Respiratory Infections",
+    "reference": "p.156 - Antibiotic selection for respiratory tract infections"
+  },
+  {
+    "number": 6,
+    "question": "Which of the following is the most common cause of viral hepatitis worldwide?",
+    "choices": {
+      "a": "Hepatitis A virus",
+      "b": "Hepatitis B virus",
+      "c": "Hepatitis C virus",
+      "d": "Hepatitis E virus"
+    },
+    "answer": "b",
+    "section": "Hepatology",
+    "reference": "p.203 - Epidemiology of viral hepatitis"
+  }
+] 

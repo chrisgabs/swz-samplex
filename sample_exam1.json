@@ -1,0 +1,67 @@
+[
+  {
+    "number": 1,
+    "question": "Which of the following is a symptom of acute appendicitis?",
+    "choices": {
+      "a": "Pain in the right lower quadrant",
+      "b": "Pain in the left lower quadrant",
+      "c": "Pain in the epigastric region",
+      "d": "Pain in the left upper quadrant"
+    },
+    "answer": "a",
+    "section": "Gastrointestinal Disorders",
+    "reference": "p.45 - Clinical presentation of appendicitis"
+  },
+  {
+    "number": 2,
+    "question": "What is the most common causative agent of bacterial meningitis in adults?",
+    "choices": {
+      "a": "Haemophilus influenzae",
+      "b": "Streptococcus pneumoniae",
+      "c": "Neisseria meningitidis",
+      "d": "Listeria monocytogenes"
+    },
+    "answer": "b",
+    "section": "Infectious Diseases",
+    "reference": "p.120 - Bacterial meningitis pathogens by age group"
+  },
+  {
+    "number": 3,
+    "question": "Which of the following best describes the characteristic rash of measles?",
+    "choices": {
+      "a": "Vesicular rash that begins on the trunk",
+      "b": "Maculopapular rash that begins on the face and spreads downward",
+      "c": "Petechial rash with a sandpaper-like texture",
+      "d": "Erythematous rash with target lesions"
+    },
+    "answer": "b",
+    "section": "Pediatric Diseases",
+    "reference": "p.87 - Clinical features of common childhood exanthems"
+  },
+  {
+    "number": 4,
+    "question": "Which of the following drugs is contraindicated in patients with G6PD deficiency?",
+    "choices": {
+      "a": "Acetaminophen",
+      "b": "Penicillin",
+      "c": "Primaquine",
+      "d": "Amoxicillin"
+    },
+    "answer": "c",
+    "section": "Pharmacology",
+    "reference": "p.215 - Drug contraindications in metabolic disorders"
+  },
+  {
+    "number": 5,
+    "question": "What is the first-line treatment for uncomplicated community-acquired pneumonia in an otherwise healthy adult?",
+    "choices": {
+      "a": "Azithromycin",
+      "b": "Levofloxacin",
+      "c": "Vancomycin",
+      "d": "Piperacillin-tazobactam"
+    },
+    "answer": "a",
+    "section": "Infectious Diseases",
+    "reference": "p.132 - Management of community-acquired pneumonia"
+  }
+] 

@@ -1,0 +1,93 @@
+[
+  {
+    "number": 1,
+    "question": "What is the typical clinical presentation of acute appendicitis?",
+    "choices": {
+      "a": "Diffuse abdominal pain followed by localization to the right lower quadrant",
+      "b": "Localized pain in the left lower quadrant",
+      "c": "Severe pain in the epigastrium radiating to the back",
+      "d": "Periumbilical pain radiating to the left upper quadrant"
+    },
+    "answer": "a",
+    "section": "Surgical Emergencies",
+    "reference": "p.89 - Acute abdominal pathologies"
+  },
+  {
+    "number": 2,
+    "question": "Which organism is the leading cause of acute bacterial meningitis in adults over 50 years of age?",
+    "choices": {
+      "a": "E. coli",
+      "b": "S. pneumoniae",
+      "c": "N. meningitidis",
+      "d": "Group B Streptococcus"
+    },
+    "answer": "b",
+    "section": "Neurological Infections",
+    "reference": "p.145 - Age-related pathogens in CNS infections"
+  },
+  {
+    "number": 3,
+    "question": "A 4-year-old unvaccinated child presents with fever, coryza, conjunctivitis, and a maculopapular rash that started behind the ears and spread to the face and body. What is the diagnosis?",
+    "choices": {
+      "a": "Roseola infantum",
+      "b": "Rubella",
+      "c": "Measles",
+      "d": "Fifth disease"
+    },
+    "answer": "c",
+    "section": "Childhood Viral Illnesses",
+    "reference": "p.173 - Vaccine-preventable diseases"
+  },
+  {
+    "number": 4,
+    "question": "Which of the following conditions is characterized by pulmonary fibrosis, pleural thickening, and calcified pleural plaques?",
+    "choices": {
+      "a": "Silicosis",
+      "b": "Coal worker's pneumoconiosis",
+      "c": "Asbestosis",
+      "d": "Berylliosis"
+    },
+    "answer": "c",
+    "section": "Occupational Lung Diseases",
+    "reference": "p.210 - Radiologic findings in pneumoconioses"
+  },
+  {
+    "number": 5,
+    "question": "Which medication is commonly administered to prevent hemolytic anemia in patients with G6PD deficiency?",
+    "choices": {
+      "a": "Dapsone",
+      "b": "Vitamin E",
+      "c": "Folic acid",
+      "d": "Avoiding primaquine and sulfonamides"
+    },
+    "answer": "d",
+    "section": "Hematological Disorders",
+    "reference": "p.250 - Management of enzyme deficiencies"
+  },
+  {
+    "number": 6,
+    "question": "A previously healthy 25-year-old presents with fever, productive cough, and crackles in the right lower lobe. What is the first-line antibiotic treatment?",
+    "choices": {
+      "a": "Ceftriaxone plus azithromycin",
+      "b": "Azithromycin alone",
+      "c": "Vancomycin plus piperacillin-tazobactam",
+      "d": "Meropenem"
+    },
+    "answer": "b",
+    "section": "Pulmonary Infections",
+    "reference": "p.187 - Empiric therapy for community-acquired pneumonia"
+  },
+  {
+    "number": 7,
+    "question": "Which of the following best describes the pathophysiology of diabetic ketoacidosis?",
+    "choices": {
+      "a": "Insulin excess with increased glucose utilization",
+      "b": "Insulin deficiency with increased lipolysis and ketogenesis",
+      "c": "Insulin resistance with normal ketone production",
+      "d": "Decreased glucagon with hypoglycemia"
+    },
+    "answer": "b",
+    "section": "Endocrine Emergencies",
+    "reference": "p.302 - Acute complications of diabetes mellitus"
+  }
+] 

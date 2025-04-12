@@ -1,0 +1,102 @@
+[
+  {
+    "number": 1,
+    "question": {
+      "sample_exam1": "Which of the following is a symptom of acute appendicitis?",
+      "sample_exam2": "A 45-year-old patient presents with pain in the lower right abdomen. Which of the following is most likely to be causing this symptom?",
+      "sample_exam3": "What is the typical clinical presentation of acute appendicitis?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Pain in the right lower quadrant",
+        "b": "Pain in the left lower quadrant",
+        "c": "Pain in the epigastric region",
+        "d": "Pain in the left upper quadrant"
+      },
+      "sample_exam2": {
+        "a": "Appendicitis",
+        "b": "Diverticulitis",
+        "c": "Gastritis",
+        "d": "Pancreatitis"
+      },
+      "sample_exam3": {
+        "a": "Diffuse abdominal pain followed by localization to the right lower quadrant",
+        "b": "Localized pain in the left lower quadrant",
+        "c": "Severe pain in the epigastrium radiating to the back",
+        "d": "Periumbilical pain radiating to the left upper quadrant"
+      }
+    },
+    "answer": {
+      "sample_exam1": "a",
+      "sample_exam2": "a",
+      "sample_exam3": "a"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 1,
+        "section": "Gastrointestinal Disorders",
+        "reference": "p.45 - Clinical presentation of appendicitis"
+      },
+      "sample_exam2": {
+        "number": 1,
+        "section": "Acute Abdominal Conditions",
+        "reference": "p.67 - Differential diagnosis of abdominal pain"
+      },
+      "sample_exam3": {
+        "number": 1,
+        "section": "Surgical Emergencies",
+        "reference": "p.89 - Acute abdominal pathologies"
+      }
+    }
+  },
+  {
+    "number": 2,
+    "question": {
+      "sample_exam1": "What is the most common causative agent of bacterial meningitis in adults?",
+      "sample_exam2": "In adults with bacterial meningitis, which pathogen is most frequently isolated from CSF cultures?",
+      "sample_exam3": "Which organism is the leading cause of acute bacterial meningitis in adults over 50 years of age?"
+    },
+    "choices": {
+      "sample_exam1": {
+        "a": "Haemophilus influenzae",
+        "b": "Streptococcus pneumoniae",
+        "c": "Neisseria meningitidis",
+        "d": "Listeria monocytogenes"
+      },
+      "sample_exam2": {
+        "a": "H. influenzae",
+        "b": "S. pneumoniae",
+        "c": "N. meningitidis",
+        "d": "L. monocytogenes"
+      },
+      "sample_exam3": {
+        "a": "E. coli",
+        "b": "S. pneumoniae",
+        "c": "N. meningitidis",
+        "d": "Group B Streptococcus"
+      }
+    },
+    "answer": {
+      "sample_exam1": "b",
+      "sample_exam2": "b",
+      "sample_exam3": "b"
+    },
+    "reference": {
+      "sample_exam1": {
+        "number": 2,
+        "section": "Infectious Diseases",
+        "reference": "p.120 - Bacterial meningitis pathogens by age group"
+      },
+      "sample_exam2": {
+        "number": 2,
+        "section": "CNS Infections",
+        "reference": "p.93 - Microbiology of meningitis"
+      },
+      "sample_exam3": {
+        "number": 2,
+        "section": "Neurological Infections",
+        "reference": "p.145 - Age-related pathogens in CNS infections"
+      }
+    }
+  }
+]
