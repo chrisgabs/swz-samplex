@@ -1,11 +1,11 @@
-﻿!k::  ; Alt+J for Edge
+﻿!k::  ; Alt+K for Edge
     if WinExist("ahk_exe msedge.exe")
         WinActivate
     else
         Run "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
     return
 
-!j::  ; Alt+N for Cursor
+!j::  ; Alt+J for Cursor
     if WinExist("ahk_exe Cursor.exe")
         WinActivate
     else
