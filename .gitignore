@@ -1,4 +1,6 @@
-./dataset/*
-./python_analyzer/sample_exam*
-./python_analyzer/similar_questions.json
-./website/similar_questions.json
+dataset/*
+python_analyzer/sample_exam*
+python_analyzer/venv/
+python_analyzer/similar_questions.json
+python_analyzer/similar_questions_original.json
+website/similar_questions.json

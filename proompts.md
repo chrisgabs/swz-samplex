@@ -19,6 +19,7 @@ I uploaded a PDF file containing multiple choice questions. Please give me all q
 For cases where the PDF file contains a question with no contents, ignore the question and proceed to the next one.
 DO NOT STOP generating until all questions are encoded.
 
+First check how many questions in total there are in the PDF then DO NOT STOP generating until all questions are encoded. ENCODE ALL QUESTIONS IN ONE OUTPUT
 
 ----------------------------
 

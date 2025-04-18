@@ -169,7 +169,7 @@ def find_similar_questions(exam_files):
     processed_indices = set()
     
     # Threshold for similarity - adjusted based on testing
-    similarity_threshold = 0.40
+    similarity_threshold = 0.60
     
     print(f"Using similarity threshold: {similarity_threshold}")
     
