@@ -1,6 +1,7 @@
 dataset/*
 python_analyzer/sample_exam*
-python_analyzer/similar_questions.json
-python_analyzer/similar_questions_original.json
-python_analyzer/venv/
+python_analyzer/.venv/
+python_analyzer/.env
+python_analyzer/out
+python_analyzer/parser/test.pdf
 website/similar_questions.json

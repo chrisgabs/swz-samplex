@@ -6,6 +6,8 @@ import glob
 import re
 from collections import defaultdict
 import numpy as np
+
+nltk.download('punkt_tab')
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import nltk
@@ -99,12 +101,14 @@ def find_similar_questions(exam_files):
     exams = {}
     questions = []
     
+    print(f"Exam files:--------------- {exam_files}")
     # Load all questions from all exams
     for file_path in exam_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 exam_name = Path(file_path).stem
+                print(f"Exam name:--------------- {exam_name}")
                 exams[exam_name] = data
                 
                 for q in data:

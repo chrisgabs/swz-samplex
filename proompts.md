@@ -17,9 +17,12 @@ I uploaded a PDF file containing multiple choice questions. Please give me all q
 ```
 
 For cases where the PDF file contains a question with no contents, ignore the question and proceed to the next one.
-DO NOT STOP generating until all questions are encoded.
+If there are questions with missing information such as choices, answer, or section, please output the question with the missing information as an empty string.
 
+DO NOT STOP generating until all questions are encoded.
 First check how many questions in total there are in the PDF then DO NOT STOP generating until all questions are encoded. ENCODE ALL QUESTIONS IN ONE OUTPUT
+
+After you have encoded all questions, please output "<%DONE%>". Please output only the JSON object. Do not include any other text or comments except for the "<%DONE%>" string.
 
 ----------------------------
 
@@ -75,7 +78,7 @@ The output of the program should follow the following structure:
   "reference" {
     "Examination_A": {
         "number": <question number of the question from Examination_A>
-        "section": "<title of the section the question is based on for Examination_A>",
+        "section": "<jtitle of the section the question is based on for Examination_A>",
         "reference": "<page number and short note of where in the PDF the answer is found for Examination_B>"
     }
     "Examination_B": {
@@ -90,3 +93,61 @@ The output of the program should follow the following structure:
 Where the keys of question, choices, answer, and reference attribute refer to the examinations in which the given question was found. If there are cases where the question shows up in all three examinations, there will be another entry Examination_C.
 
 Please note that Examination_C, Examination_B, and Examination_A. Are just placeholders, please use the actual file name of the three examinations as keys.
+
+---------------------- GEMINI 2.0 FLASH-LITE IS TOO DUMB FOR THIS JOB ----------------------
+
+I have multiple PDF files provided all of which contains multiple choice questions. For context these are from a medical student's examination taken by different batches of students. I want to get the questions that are similar across different examinations. Similar in a way that the question may be worded differently but the underlying concept is the same.
+
+The output will be used as a guide for students to study such that they can focus on the most important questions.
+
+The output should be a JSON file with the following structure:
+
+```
+{
+  "number": <question number>,
+  "question": {
+    "Examination_A": "<question from examination A>",
+    "Examination_B": "<question from examination B>"
+  },
+  "choices": {
+    "Examination_A": {
+        "a": "<choice A>",
+        "b": "<choice B>",
+        "c": "<choice C>",
+        "d": "<choice D>"
+    }
+    "Examination_B": {
+        "a": "<choice A>",
+        "b": "<choice B>",
+        "c": "<choice C>",
+        "d": "<choice D>"
+    }
+  },
+  "answer": {
+    "Examination_A": "<answer from examination A>",
+    "Examination_B": "<answer from examination B>"
+  },
+  "reference" {
+    "Examination_A": {
+        "number": <question number of the question from Examination_A>
+        "section": "<title of the section the question is based on for Examination_A>",
+        "reference": "<page number and short note of where in the PDF the answer is found for Examination_B>"
+    }
+    "Examination_B": {
+        "number": <question number of the question from Examination_B>
+        "section": "<title of the section the question is based on for Examination_B>",
+        "reference": "<page number and short note of where in the PDF the answer is found for Examination_B>"
+    }
+  }
+}
+```
+
+Where the keys of question, choices, answer, and reference attribute refer to the file names in which the given question was found. If there are cases where the question shows up in three examinations, there will be another entry Examination_C. The number of files provided will be arbitrary but will be at least 2. 
+
+Examination_A, Examination_B, and Examination_C are just placeholders, please use the actual file names of the files provided as keys.
+
+Please evaluate thoroughly your though process in determining which questions are similar and which are not, take into consideration the context of the question, choices, and answer.
+
+For cases where there are missing questions, please set the values of "choices" to an empty dictionary. The same goes for the "answer" and "reference" keys.
+
+Compare all questions across all examinations. When you are done, please output "DONE".
