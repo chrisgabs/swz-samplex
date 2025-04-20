@@ -6,6 +6,7 @@ import glob
 import re
 from collections import defaultdict, Counter
 import difflib
+from dataclasses import dataclass
 
 def preprocess_text(text):
     """Preprocess text for similarity comparison."""
@@ -140,25 +141,31 @@ def calculate_similarity(q1, q2, key_concepts):
     
     return similarity_score
 
-def find_similar_questions(exam_files):
+
+@dataclass
+class Exam:
+    name: str
+    questions: str
+
+
+def find_similar_questions(exams: list[Exam]):
     """Find similar questions across multiple examination files."""
     exams = {}
     questions = []
     
     # Load all questions from all exams
-    for file_path in exam_files:
+    for exam in exams:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                exam_name = Path(file_path).stem
-                exams[exam_name] = data
-                
-                for q in data:
-                    q['source_exam'] = exam_name
-                    questions.append(q)
+            data = json.load(exam.questions)
+            exam_name = exam.name
+            exams[exam_name] = data
+            
+            for q in data:
+                q['source_exam'] = exam_name
+                questions.append(q)
         except Exception as e:
-            print(f"Error loading {file_path}: {e}")
-            continue
+            print(f"Error loading {exam.name}: {e}")
+            continue 
     
     # Extract key concepts from all questions
     key_concepts = extract_key_concepts(questions)
@@ -200,7 +207,7 @@ def find_similar_questions(exam_files):
         if len(group) >= 2 and len(set(q['source_exam'] for q in group)) >= 2:
             similar_groups.append(group)
     
-    return similar_groups, exams
+    return format_output(similar_groups)
 
 def format_output(similar_groups):
     """Format the output according to the specified structure."""
@@ -254,12 +261,11 @@ def main():
         return
     
     print(f"Processing {len(exam_files)} examination files: {', '.join(exam_files)}")
+
+    exams = [Exam(name=Path(f).stem, questions=open(f, 'r', encoding='utf-8')) for f in exam_files]
     
     # Find similar questions
-    similar_groups, exams = find_similar_questions(exam_files)
-    
-    # Format output
-    results = format_output(similar_groups)
+    results = find_similar_questions(exams)
     
     # Write results to file
     output_file = "similar_questions.json"
@@ -270,26 +276,26 @@ def main():
     print(f"Results saved to {output_file}")
     
     # Display some statistics
-    exams_per_group = [len(set(q['source_exam'] for q in group)) for group in similar_groups]
+    exams_per_group = [len(set(q['source_exam'] for q in group)) for group in results]
     if exams_per_group:
         avg_exams_per_group = sum(exams_per_group) / len(exams_per_group)
         print(f"Average number of examinations per similar question group: {avg_exams_per_group:.2f}")
     
-    # Display the similar question groups (if any)
-    if results:
-        for i, example in enumerate(results):
-            print(f"\nSimilar Question Group #{i+1}:")
-            for exam_name in sorted(example["question"].keys()):
-                print(f"\n--- {exam_name} ---")
-                print(f"Question: {example['question'][exam_name]}")
-                print("Choices:")
-                for choice_key, choice_text in sorted(example["choices"][exam_name].items()):
-                    print(f"  {choice_key}) {choice_text}")
-                print(f"Answer: {example['answer'][exam_name]}")
-                print(f"Original Question Number: {example['reference'][exam_name]['number']}")
-                print(f"Section: {example['reference'][exam_name]['section']}")
-                print(f"Reference: {example['reference'][exam_name]['reference']}")
-            print("-" * 50)
+    # # Display the similar question groups (if any)
+    # if results:
+    #     for i, example in enumerate(results):
+    #         print(f"\nSimilar Question Group #{i+1}:")
+    #         for exam_name in sorted(example["question"].keys()):
+    #             print(f"\n--- {exam_name} ---")
+    #             print(f"Question: {example['question'][exam_name]}")
+    #             print("Choices:")
+    #             for choice_key, choice_text in sorted(example["choices"][exam_name].items()):
+    #                 print(f"  {choice_key}) {choice_text}")
+    #             print(f"Answer: {example['answer'][exam_name]}")
+    #             print(f"Original Question Number: {example['reference'][exam_name]['number']}")
+    #             print(f"Section: {example['reference'][exam_name]['section']}")
+    #             print(f"Reference: {example['reference'][exam_name]['reference']}")
+    #         print("-" * 50)
 
 if __name__ == "__main__":
     main() 

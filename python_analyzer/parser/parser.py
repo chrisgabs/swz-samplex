@@ -2,7 +2,7 @@ from google import genai
 from google.genai import types
 import os
 from dotenv import load_dotenv
-from prompts import *
+from .prompts import *
 import json
 import json5
 import time
