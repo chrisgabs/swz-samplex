@@ -148,15 +148,25 @@ class Exam:
     questions: str
 
 
-def find_similar_questions(exams: list[Exam]):
+def clean_question(q: dict) -> dict:
+    q["choices"] = q.get("choices", {}) or {}
+    q["answer"] = q.get("answer", "") or ""
+    q["reference"] = q.get("reference", "") or ""
+    q["section"] = q.get("section", "") or ""
+    q["question"] = q.get("question", "") or ""
+    q["number"] = q.get("number", -1) or -1
+    return q
+
+def find_similar_questions(examinations: list[Exam]):
     """Find similar questions across multiple examination files."""
     exams = {}
     questions = []
     
     # Load all questions from all exams
-    for exam in exams:
+    for exam in examinations:
         try:
-            data = json.load(exam.questions)
+            data = json.loads(exam.questions)
+            data = [clean_question(q) for q in data]
             exam_name = exam.name
             exams[exam_name] = data
             
@@ -206,7 +216,7 @@ def find_similar_questions(exams: list[Exam]):
         # Only keep groups with questions from at least 2 different exams
         if len(group) >= 2 and len(set(q['source_exam'] for q in group)) >= 2:
             similar_groups.append(group)
-    
+
     return format_output(similar_groups)
 
 def format_output(similar_groups):

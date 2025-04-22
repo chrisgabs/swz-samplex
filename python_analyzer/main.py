@@ -5,17 +5,27 @@ import os
 import json
 from pathlib import Path
 
+def get_questions_from_file(file_path: str) -> str:
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
 def main():
     load_dotenv()
     gemini_api_key = os.getenv('GEMINI_API_KEY')
     parser = Parser(api_key=gemini_api_key)
 
-    batch_name = input("Enter the batch name: ")
+    batch_name = input("Enter batch name: ")
+    get_from_file = input("Get questions from file? (y/n): ")
+    get_from_file = get_from_file == "y"
 
-    IN_DIR = "in/"
-    OUT_DIR = "out/"
-
+    IN_DIR = "in/" + batch_name + "/"
+    OUT_DIR = "out/" + batch_name + "/"
+    if not os.path.exists(IN_DIR):
+        print(f"Error: Directory {IN_DIR} does not exist.")
+        return
+    if not os.path.exists(OUT_DIR):
+        os.makedirs(OUT_DIR)
+        
     exams: list[Exam] = []
     for file in os.listdir(IN_DIR):
         exam = Exam(
@@ -24,28 +34,32 @@ def main():
         )
         exams.append(exam)
 
-    print(f"---- Found {len(exams)} exams ----")
+    print(f"Found {len(exams)} exams")
     for exam in exams:
-        print(f"--- {exam.name} ---")
-    print("--------------------------------")
+        print(f"- {exam.name}")
 
     for exam in exams:
-        print(f"---- Parsing {exam.name} ----")
-        questions = parser.parse_pdf(
-            pdf_path=IN_DIR + exam.name + ".pdf",
-            temp_out_dir=OUT_DIR
-        )
+        if get_from_file:
+            print(f"Processing {exam.name} ... ", end="")
+            questions = get_questions_from_file(IN_DIR + exam.name + ".json")
+            print(f"DONE")
+        else:
+            print(f"Processing {exam.name} ... ")
+            questions = parser.parse_pdf(
+                pdf_path=IN_DIR + exam.name + ".pdf",
+                temp_out_dir=OUT_DIR
+            )
+            print(f"Done parsing {exam.name}")
         exam.questions = questions
 
-    # TODO: fix find_similar_questions, currently returning []
+    print("Finding similar questions ...")
     similar_questions = find_similar_questions(exams)
+    print(f"Found {len(similar_questions)} similar questions")
 
-    print(f"---- Found {len(similar_questions)} similar questions ----")
-
-    with open(OUT_DIR + batch_name + "_similar_questions.json", 'w', encoding='utf-8') as f:
+    with open(OUT_DIR + "similar_questions.json", 'w', encoding='utf-8') as f:
         json.dump(similar_questions, f, indent=2)
 
-    print("similar_questions.json saved")
+    print(f"Analysis complete. Results saved to {OUT_DIR}similar_questions.json")
 
 if __name__ == "__main__":
     main()

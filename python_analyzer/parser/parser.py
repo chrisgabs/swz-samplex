@@ -28,9 +28,11 @@ def remove_trailing_object(text: str) -> str:
 def cleanup_json(json_text: str) -> str:
     try:
         json_text = json.loads(json_text)
+        json_text = json.dumps(json_text)
     except json.JSONDecodeError:
         try:
             json_text = json5.loads(json_text)
+            json_text = json5.dumps(json_text)
         except Exception as e:
             print("Error: Failed to parse JSON file")
             print(e)
