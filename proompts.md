@@ -173,3 +173,60 @@ The output should be a JSON file with the following structure:
 ```
 
 Please output the JSON file in the same directory as the script with the name "merged_similar_questions_MM:DD:HH:MM.json".
+
+--------------------------------
+
+The current website takes in JSON data that contains a list of objects that follows the following structure:
+
+```
+{
+  "number": <question number>,
+  "question": {
+    "Examination_A": "<question from examination A>",
+    "Examination_B": "<question from examination B>"
+  },
+  "choices": {
+    "Examination_A": {
+        "a": "<choice A>",
+        "b": "<choice B>",
+        "c": "<choice C>",
+        "d": "<choice D>"
+    }
+    "Examination_B": {
+        "a": "<choice A>",
+        "b": "<choice B>",
+        "c": "<choice C>",
+        "d": "<choice D>"
+    }
+  },
+  "answer": {
+    "Examination_A": "<answer from examination A>",
+    "Examination_B": "<answer from examination B>"
+  },
+  "reference" {
+    "Examination_A": {
+        "number": <question number of the question from Examination_A>
+        "section": "<jtitle of the section the question is based on for Examination_A>",
+        "reference": "<page number and short note of where in the PDF the answer is found for Examination_B>"
+    }
+    "Examination_B": {
+        "number": <question number of the question from Examination_B>
+        "section": "<title of the section the question is based on for Examination_B>",
+        "reference": "<page number and short note of where in the PDF the answer is found for Examination_B>"
+    }
+  }
+}
+```
+
+This data is currently being used to populate the website. I want to change the data structure such that multiple lists of questions are groups together and the user can choose among which group of questions to preview in the website.
+
+I want to change the data structure to the following:
+
+```
+{
+  "batch_name": "<name of the batch>",
+  "similar_questions": <list of similar questions>
+}
+```
+
+Please make the necessary changes to the website to accommodate the new data structure. The user should be able to choose which batch of questions to preview from the dashboard. Do not change any existing functionality.

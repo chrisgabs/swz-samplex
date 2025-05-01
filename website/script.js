@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup the import functionality
     setupImportModal();
+    
+    // Setup batch selection functionality
+    setupBatchSelector();
 });
 
 function initializeApp() {
@@ -35,6 +38,14 @@ function loadDefaultData() {
             return response.json();
         })
         .then(data => {
+            // Check if the loaded data is already in the new format (with batch_name and similar_questions)
+            // If not, convert it to the new format
+            if (!data.batch_name) {
+                data = {
+                    batch_name: "Default Batch",
+                    similar_questions: data
+                };
+            }
             processQuestionData(data);
         })
         .catch(error => {
@@ -48,18 +59,83 @@ function loadDefaultData() {
         });
 }
 
+function setupBatchSelector() {
+    const batchSelector = document.getElementById('batchSelector');
+    
+    batchSelector.addEventListener('change', () => {
+        const selectedBatchIndex = batchSelector.value;
+        const storedData = localStorage.getItem('importedQuestionData');
+        
+        if (storedData) {
+            try {
+                const allData = JSON.parse(storedData);
+                
+                // If it's an array of batches
+                if (Array.isArray(allData)) {
+                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
+                        processActiveBatch(allData[selectedBatchIndex]);
+                    }
+                } else {
+                    // If there's only one batch object
+                    processActiveBatch(allData);
+                }
+                
+            } catch (error) {
+                console.error('Error processing batch selection:', error);
+            }
+        }
+    });
+}
+
 function processQuestionData(data) {
-    // Update dashboard statistics
-    updateDashboard(data);
+    // Check if data is an array of batches or a single batch
+    if (Array.isArray(data) && data.length > 0 && data[0].batch_name) {
+        // It's an array of batches
+        populateBatchSelector(data);
+        // Process the first batch as default
+        processActiveBatch(data[0]);
+    } else {
+        // It's a single batch (or old format)
+        populateBatchSelector([data]);
+        processActiveBatch(data);
+    }
+}
+
+function populateBatchSelector(batches) {
+    const batchSelector = document.getElementById('batchSelector');
+    batchSelector.innerHTML = '';
+    
+    if (Array.isArray(batches)) {
+        batches.forEach((batch, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = batch.batch_name || `Batch ${index + 1}`;
+            batchSelector.appendChild(option);
+        });
+    } else {
+        // Single batch object
+        const option = document.createElement('option');
+        option.value = 0;
+        option.textContent = batches.batch_name || 'Default Batch';
+        batchSelector.appendChild(option);
+    }
+}
+
+function processActiveBatch(batch) {
+    // Extract the similar_questions array
+    const questions = batch.similar_questions || batch;
+    
+    // Update dashboard with batch name and statistics
+    updateDashboard(questions, batch.batch_name);
     
     // Display the questions
-    displayQuestions(data);
+    displayQuestions(questions);
     
-    // Setup search functionality
-    setupSearch(data);
+    // Setup search functionality for this batch
+    setupSearch(questions);
     
-    // Setup exam filters
-    setupExamFilters(data);
+    // Setup exam filters for this batch
+    setupExamFilters(questions);
 }
 
 function setupImportModal() {
@@ -110,15 +186,38 @@ function setupImportModal() {
         try {
             const data = JSON.parse(jsonText);
             
-            // Basic validation to ensure it has the right structure
-            if (!Array.isArray(data) || data.length === 0) {
-                throw new Error('JSON data must be an array with at least one question group.');
-            }
-            
-            // Check if first item has the expected properties
-            const firstItem = data[0];
-            if (!firstItem.question || !firstItem.choices || !firstItem.answer || !firstItem.reference) {
-                throw new Error('JSON data does not match the expected structure.');
+            // Validate the new structure
+            if (Array.isArray(data)) {
+                // Array of batch objects
+                if (data.length === 0) {
+                    throw new Error('JSON data must contain at least one batch.');
+                }
+                
+                // Check if each item has batch_name and similar_questions array
+                for (const batch of data) {
+                    if (!batch.batch_name || !Array.isArray(batch.similar_questions) || batch.similar_questions.length === 0) {
+                        throw new Error('Each batch must have a batch_name and similar_questions array.');
+                    }
+                    validateQuestionStructure(batch.similar_questions[0]);
+                }
+            } else {
+                // Single batch object
+                if (!data.batch_name || !Array.isArray(data.similar_questions) || data.similar_questions.length === 0) {
+                    // Try to check if it's the old format (just an array of questions)
+                    if (Array.isArray(data) && data.length > 0) {
+                        validateQuestionStructure(data[0]);
+                        // Convert to new format
+                        data = {
+                            batch_name: "Imported Batch",
+                            similar_questions: data
+                        };
+                    } else {
+                        validateQuestionStructure(data);
+                    }
+                } else {
+                    // It's a single batch in the new format
+                    validateQuestionStructure(data.similar_questions[0]);
+                }
             }
             
             // Store in localStorage
@@ -157,6 +256,19 @@ function setupImportModal() {
     document.querySelector('#importModal .flex.items-center.justify-between div:last-child').prepend(clearImportedData);
 }
 
+function validateQuestionStructure(question) {
+    // Basic validation to ensure it has the right structure
+    if (!question) {
+        throw new Error('Invalid question object.');
+    }
+    
+    if (!question.question || !question.choices || !question.answer || !question.reference) {
+        throw new Error('Each question must have question, choices, answer, and reference properties.');
+    }
+    
+    return true;
+}
+
 function showNotification(message, type = 'info') {
     // Create notification element
     const notification = document.createElement('div');
@@ -175,7 +287,7 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-function updateDashboard(questions) {
+function updateDashboard(questions, batchName = '') {
     // Get all unique exams across all questions
     const allExams = new Set();
     questions.forEach(q => {
@@ -191,8 +303,9 @@ function updateDashboard(questions) {
     document.getElementById('totalExams').textContent = allExams.size;
     document.getElementById('avgQuestionsPerExam').textContent = avgPerGroup;
     
-    // Update results count
-    document.getElementById('resultsCount').textContent = `Showing all ${questions.length} similar question groups`;
+    // Update batch info in the results count
+    const batchInfo = batchName ? `(${batchName})` : '';
+    document.getElementById('resultsCount').textContent = `Showing all ${questions.length} similar question groups ${batchInfo}`;
 }
 
 function displayQuestions(questions) {
@@ -450,22 +563,38 @@ function setupExamFilters(questions) {
             
             // Filter questions
             const filter = this.dataset.filter;
+            const batchSelector = document.getElementById('batchSelector');
+            const selectedBatchIndex = batchSelector.value;
             
-            // Get the current data (either from localStorage or default)
-            let currentData;
+            // Get the current batch data
+            let currentQuestions;
             const storedData = localStorage.getItem('importedQuestionData');
+            
             if (storedData) {
-                currentData = JSON.parse(storedData);
+                try {
+                    const allData = JSON.parse(storedData);
+                    
+                    if (Array.isArray(allData)) {
+                        // Multiple batches
+                        if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
+                            currentQuestions = allData[selectedBatchIndex].similar_questions;
+                        }
+                    } else {
+                        // Single batch object
+                        currentQuestions = allData.similar_questions || questions;
+                    }
+                } catch (error) {
+                    console.error('Error retrieving current questions for filtering:', error);
+                    currentQuestions = questions;
+                }
             } else {
-                // This will need to re-fetch the data
-                // For simplicity, we're re-using the questions parameter
-                currentData = questions;
+                currentQuestions = questions;
             }
             
             if (filter === 'all') {
-                displayQuestions(currentData);
+                displayQuestions(currentQuestions);
             } else {
-                const filtered = currentData.filter(q => Object.keys(q.question).includes(filter));
+                const filtered = currentQuestions.filter(q => Object.keys(q.question).includes(filter));
                 displayQuestions(filtered);
             }
         });
@@ -477,23 +606,40 @@ function setupSearch(questions) {
     
     searchInput.addEventListener('input', () => {
         const searchTerm = searchInput.value.toLowerCase().trim();
+        const batchSelector = document.getElementById('batchSelector');
+        const selectedBatchIndex = batchSelector.value;
         
-        // Get the current data (either from localStorage or default)
-        let currentData;
+        // Get the current batch data
+        let currentQuestions;
         const storedData = localStorage.getItem('importedQuestionData');
+        
         if (storedData) {
-            currentData = JSON.parse(storedData);
+            try {
+                const allData = JSON.parse(storedData);
+                
+                if (Array.isArray(allData)) {
+                    // Multiple batches
+                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
+                        currentQuestions = allData[selectedBatchIndex].similar_questions;
+                    }
+                } else {
+                    // Single batch object
+                    currentQuestions = allData.similar_questions || questions;
+                }
+            } catch (error) {
+                console.error('Error retrieving current questions for search:', error);
+                currentQuestions = questions;
+            }
         } else {
-            // Re-use the questions parameter
-            currentData = questions;
+            currentQuestions = questions;
         }
         
         if (searchTerm === '') {
-            displayQuestions(currentData);
+            displayQuestions(currentQuestions);
             return;
         }
         
-        const filteredQuestions = currentData.filter(q => {
+        const filteredQuestions = currentQuestions.filter(q => {
             // Search in all exam questions
             return Object.values(q.question).some(text => 
                 text.toLowerCase().includes(searchTerm)
