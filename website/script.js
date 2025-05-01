@@ -436,7 +436,6 @@ function displayQuestions(questions) {
                 <div class="mb-2 flex justify-between items-center">
                     <div>
                         <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
-                        <span class="text-xs text-gray-500 ml-2">Q${questionGroup.reference[previewExam].number} - ${questionGroup.reference[previewExam].section}</span>
                     </div>
                     <button class="answer-toggle text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-full flex items-center" data-toggle-id="${toggleId}">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
