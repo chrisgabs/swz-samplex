@@ -294,18 +294,84 @@ function updateDashboard(questions, batchName = '') {
         Object.keys(q.question).forEach(exam => allExams.add(exam));
     });
     
-    // Calculate avg questions per exam group
-    const totalExamInstances = questions.reduce((sum, q) => sum + Object.keys(q.question).length, 0);
-    const avgPerGroup = (totalExamInstances / questions.length).toFixed(2);
+    // Calculate exam distribution
+    const examCounts = {};
+    let totalExamInstances = 0;
+    
+    // Count occurrences of each exam
+    questions.forEach(q => {
+        Object.keys(q.question).forEach(exam => {
+            examCounts[exam] = (examCounts[exam] || 0) + 1;
+            totalExamInstances++;
+        });
+    });
+    
+    // Calculate percentages and prepare for visualization
+    const examDistribution = [];
+    const availableColors = [
+        'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-yellow-500', 
+        'bg-red-500', 'bg-indigo-500', 'bg-pink-500', 'bg-orange-500',
+        'bg-teal-500', 'bg-cyan-500'
+    ];
+    
+    let colorIndex = 0;
+    
+    // Sort exams by count (descending)
+    const sortedExams = Object.keys(examCounts).sort((a, b) => examCounts[b] - examCounts[a]);
+    
+    sortedExams.forEach(exam => {
+        const count = examCounts[exam];
+        const percentage = (count / totalExamInstances * 100).toFixed(1);
+        const color = availableColors[colorIndex % availableColors.length];
+        
+        examDistribution.push({
+            exam: exam,
+            count: count,
+            percentage: percentage,
+            color: color
+        });
+        
+        colorIndex++;
+    });
     
     // Update the dashboard elements
     document.getElementById('totalQuestions').textContent = questions.length;
     document.getElementById('totalExams').textContent = allExams.size;
-    document.getElementById('avgQuestionsPerExam').textContent = avgPerGroup;
+    
+    // Update exam distribution visualization
+    updateExamDistributionVisualization(examDistribution);
     
     // Update batch info in the results count
     const batchInfo = batchName ? `(${batchName})` : '';
     document.getElementById('resultsCount').textContent = `Showing all ${questions.length} similar question groups ${batchInfo}`;
+}
+
+function updateExamDistributionVisualization(examDistribution) {
+    const distributionBar = document.getElementById('examDistributionBar');
+    const distributionLegend = document.getElementById('examDistributionLegend');
+    
+    // Clear previous content
+    distributionBar.innerHTML = '';
+    distributionLegend.innerHTML = '';
+    
+    // Create the distribution bar segments
+    examDistribution.forEach(item => {
+        const segment = document.createElement('div');
+        segment.className = `${item.color} h-full`;
+        segment.style.width = `${item.percentage}%`;
+        segment.title = `${formatExamName(item.exam)}: ${item.percentage}%`;
+        distributionBar.appendChild(segment);
+    });
+    
+    // Create the distribution legend
+    const legendHTML = examDistribution.map(item => `
+        <div class="flex items-center mt-1">
+            <div class="w-3 h-3 ${item.color} rounded-sm mr-1"></div>
+            <span>${formatExamName(item.exam)}: ${item.percentage}% (${item.count})</span>
+        </div>
+    `).join('');
+    
+    distributionLegend.innerHTML = legendHTML;
 }
 
 function displayQuestions(questions) {
