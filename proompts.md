@@ -151,3 +151,25 @@ Please evaluate thoroughly your though process in determining which questions ar
 For cases where there are missing questions, please set the values of "choices" to an empty dictionary. The same goes for the "answer" and "reference" keys.
 
 Compare all questions across all examinations. When you are done, please output "DONE".
+
+--------------------------------
+
+Make me a python script that will take scan through all directories in a given directory and find all files named "similar_questions.json". Get the content of each file and merge them into a single JSON file.
+
+The output should be a JSON file with the following structure:
+
+```
+[
+  {
+    "batch_name": "<name of directory from which the similar_questions.json file was found>",
+    "similar_questions": <content of the similar_questions.json file>
+  },
+  {
+    "batch_name": "<name of directory from which the similar_questions.json file was found>",
+    "similar_questions": <content of the similar_questions.json file>
+  }
+  ...
+]
+```
+
+Please output the JSON file in the same directory as the script with the name "merged_similar_questions_MM:DD:HH:MM.json".

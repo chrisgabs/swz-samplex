@@ -1,8 +1,19 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
 dataset/*
 python_analyzer/sample_exam*
 python_analyzer/.venv/
 python_analyzer/.env
 python_analyzer/out
 python_analyzer/in
+python_analyzer/formatter/out
 python_analyzer/parser/test.pdf
 website/similar_questions.json
