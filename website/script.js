@@ -1,3 +1,7 @@
+// Global variables
+let batches = [];
+let currentBatchIndex = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the app with default data or from localStorage
     initializeApp();
@@ -791,4 +795,83 @@ function setupSearch(questions) {
         
         displayQuestions(filteredQuestions);
     });
+}
+
+function importJSON() {
+    const jsonInput = document.getElementById('jsonInput').value.trim();
+    const importError = document.getElementById('importError');
+    
+    if (!jsonInput) {
+        importError.textContent = 'Please enter JSON data.';
+        return;
+    }
+    
+    try {
+        let jsonData = JSON.parse(jsonInput);
+        
+        // Handle case where JSON is an array of batches
+        if (Array.isArray(jsonData)) {
+            batches = jsonData;
+        } else {
+            // Handle case where JSON is a single batch object
+            batches = [jsonData];
+        }
+        
+        // Validate each batch
+        for (let i = 0; i < batches.length; i++) {
+            const batch = batches[i];
+            if (!batch.similar_questions || !Array.isArray(batch.similar_questions) || batch.similar_questions.length === 0) {
+                importError.textContent = `Batch ${i+1} is missing valid questions data.`;
+                return;
+            }
+        }
+        
+        currentBatchIndex = 0;
+        updateBatchSelector();
+        updateDashboard();
+        displayQuestions(filterQuestions());
+        
+        importError.textContent = '';
+        document.getElementById('jsonInput').value = '';
+        document.getElementById('importModal').style.display = 'none';
+    } catch (e) {
+        importError.textContent = `Invalid JSON format: ${e.message}`;
+    }
+}
+
+function filterQuestions() {
+    if (!batches || batches.length === 0 || currentBatchIndex === undefined) {
+        return [];
+    }
+    
+    // Return the current batch's questions
+    return batches[currentBatchIndex].similar_questions || [];
+}
+
+function updateBatchSelector() {
+    const batchSelector = document.getElementById('batchSelector');
+    batchSelector.innerHTML = '';
+    
+    if (!batches || batches.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No batches available';
+        option.disabled = true;
+        option.selected = true;
+        batchSelector.appendChild(option);
+        return;
+    }
+    
+    batches.forEach((batch, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = batch.batch_name || `Batch ${index + 1}`;
+        batchSelector.appendChild(option);
+    });
+    
+    batchSelector.value = currentBatchIndex;
+    
+    // Trigger the change event to update the display
+    const event = new Event('change');
+    batchSelector.dispatchEvent(event);
 } 
