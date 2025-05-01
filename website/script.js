@@ -327,6 +327,23 @@ function displayQuestions(questions) {
         questionCard.className = 'bg-white rounded-lg shadow-md p-6 fade-in mb-6';
         questionCard.dataset.number = questionGroup.number;
         
+        // Sort exam keys to find the one to preview
+        const sortedExams = [...exams].sort((a, b) => {
+            // Try numeric sorting first
+            const numA = parseInt(a.replace(/[^\d]/g, ''));
+            const numB = parseInt(b.replace(/[^\d]/g, ''));
+            
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return numB - numA; // Descending order for largest first
+            }
+            
+            // Fall back to alphabetical sorting
+            return b.localeCompare(a); // Descending order for largest first
+        });
+        
+        // Get the exam with the largest key
+        const previewExam = sortedExams[0];
+        
         // Question header (clickable to expand/collapse)
         let header = `
             <div class="flex justify-between items-start mb-4 cursor-pointer toggle-question" data-target="question-${questionGroup.number}">
@@ -344,15 +361,43 @@ function displayQuestions(questions) {
             </div>
         `;
         
-        // Question overview (short summary visible when collapsed)
+        // Create a unique ID for this question's answer toggle
+        const toggleId = `answer-toggle-${questionGroup.number}`;
+        
+        // Question overview (showing full question and choices from the preview exam)
         let overview = `
             <div class="mb-4 border-b pb-4">
-                <p class="text-gray-700">
-                    <strong>Topic:</strong> ${extractTopic(questionGroup)}
-                </p>
-                <p class="text-gray-700 mt-1">
-                    <strong>Appears in:</strong> ${exams.length} exams (${exams.map(e => formatExamName(e)).join(', ')})
-                </p>
+                <div class="mb-2 flex justify-between items-center">
+                    <div>
+                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
+                        <span class="text-xs text-gray-500 ml-2">Q${questionGroup.reference[previewExam].number} - ${questionGroup.reference[previewExam].section}</span>
+                    </div>
+                    <button class="answer-toggle text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-full flex items-center" data-toggle-id="${toggleId}">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        Show Answer
+                    </button>
+                </div>
+                <div class="text-gray-700 mb-4">
+                    <p class="font-medium mb-2">Question:</p>
+                    <p class="pl-4">${questionGroup.question[previewExam]}</p>
+                </div>
+                <div class="text-gray-700">
+                    <p class="font-medium mb-2">Choices:</p>
+                    <div class="pl-4 space-y-1" id="${toggleId}">
+                        ${Object.entries(questionGroup.choices[previewExam]).map(([key, value]) => {
+                            const isCorrect = questionGroup.answer[previewExam].toLowerCase() === key.toLowerCase();
+                            return `
+                                <div class="py-1 ${isCorrect ? 'correct-answer' : ''}">
+                                    <span class="${isCorrect ? 'answer-key' : ''}">${key.toUpperCase()}. </span>${value}
+                                    ${isCorrect ? `<span class="answer-indicator ml-1 hidden text-green-700">✓</span>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
             </div>
         `;
         
@@ -399,25 +444,7 @@ function displayQuestions(questions) {
         
         questionBody += `</div>`;
         
-        // Add a similarity analysis section
-        let similarityAnalysis = analyzeQuestionSimilarity(questionGroup);
-        let similaritySection = `
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <h3 class="font-medium text-gray-700 mb-2">Similarity Analysis:</h3>
-                <div class="text-sm text-gray-600">
-                    <p>These ${exams.length} questions test the same medical knowledge across different exams.</p>
-                    <p class="mt-2"><span class="font-medium">Common correct answer:</span> ${getCommonAnswer(questionGroup)}</p>
-                    <div class="mt-3 p-3 bg-blue-50 rounded-md">
-                        <p class="font-medium text-blue-800">Analysis:</p>
-                        <ul class="list-disc pl-5 mt-1 space-y-1 text-blue-800">
-                            ${similarityAnalysis.map(point => `<li>${point}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        collapsibleContent += questionBody + similaritySection + '</div>';
+        collapsibleContent += questionBody + '</div>';
         
         questionCard.innerHTML = header + overview + collapsibleContent;
         questionsContainer.appendChild(questionCard);
@@ -437,6 +464,51 @@ function displayQuestions(questions) {
             } else {
                 parentCard.classList.add('expanded');
                 arrow.classList.add('rotate-180');
+            }
+        });
+    });
+    
+    // Add event listeners for answer toggle buttons
+    document.querySelectorAll('.answer-toggle').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering the question toggle
+            
+            const toggleId = this.getAttribute('data-toggle-id');
+            const choicesContainer = document.getElementById(toggleId);
+            
+            if (!choicesContainer) return; // Guard clause if container not found
+            
+            const correctAnswer = choicesContainer.querySelector('.correct-answer');
+            const answerKey = correctAnswer?.querySelector('.answer-key');
+            const answerIndicator = correctAnswer?.querySelector('.answer-indicator');
+            
+            if (!correctAnswer || !answerKey || !answerIndicator) return; // Guard clause if elements not found
+            
+            const isHidden = answerIndicator.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Show the answer
+                answerIndicator.classList.remove('hidden');
+                answerKey.classList.add('font-medium', 'text-green-700');
+                correctAnswer.classList.add('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                
+                // Update button text and icon
+                this.innerHTML = `
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                    </svg>Hide Answer`;
+            } else {
+                // Hide the answer
+                answerIndicator.classList.add('hidden');
+                answerKey.classList.remove('font-medium', 'text-green-700');
+                correctAnswer.classList.remove('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                
+                // Update button text and icon
+                this.innerHTML = `
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>Show Answer`;
             }
         });
     });
