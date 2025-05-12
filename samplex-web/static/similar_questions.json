@@ -1,0 +1,63 @@
+{
+  "batch_name": "Example Batch",
+  "similar_questions": [
+    {
+      "number": 1,
+      "question": {
+        "exam1": "What is the capital of France?",
+        "exam2": "Paris is the capital of which country?"
+      },
+      "choices": {
+        "exam1": {
+          "A": "London",
+          "B": "Paris",
+          "C": "Berlin",
+          "D": "Madrid"
+        },
+        "exam2": {
+          "A": "Germany",
+          "B": "Spain",
+          "C": "France",
+          "D": "Italy"
+        }
+      },
+      "answer": {
+        "exam1": "B",
+        "exam2": "C"
+      },
+      "reference": {
+        "exam1": "Geography 101",
+        "exam2": "World Capitals"
+      }
+    },
+    {
+      "number": 2,
+      "question": {
+        "exam1": "What is the largest planet in our solar system?",
+        "exam2": "Which planet has the greatest mass in the solar system?"
+      },
+      "choices": {
+        "exam1": {
+          "A": "Earth",
+          "B": "Jupiter",
+          "C": "Saturn",
+          "D": "Neptune"
+        },
+        "exam2": {
+          "A": "Jupiter",
+          "B": "Saturn",
+          "C": "Uranus",
+          "D": "Neptune"
+        }
+      },
+      "answer": {
+        "exam1": "B",
+        "exam2": "A"
+      },
+      "reference": {
+        "exam1": "Astronomy 101",
+        "exam2": "Solar System Basics"
+      }
+    }
+  ]
+} 
