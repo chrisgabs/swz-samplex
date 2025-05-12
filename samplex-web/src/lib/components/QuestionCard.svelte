@@ -15,7 +15,7 @@
     $: topic = extractTopic(questionGroup);
 </script>
 
-<div class="bg-white rounded-lg shadow-md p-6 fade-in mb-6" data-number={questionGroup.number}>
+<div class="bg-white rounded-lg shadow-md p-6 fade-in mb-6 {expanded ? 'expanded' : ''}" data-number={questionGroup.number}>
     <div class="flex justify-between items-start mb-4">
         <div>
             <div class="flex items-center gap-2">
@@ -45,7 +45,7 @@
         </button>
     </div>
     
-    <div class="collapsible-content" class:expanded>
+    <div class="collapsible-content">
         {#each exams as exam}
             <div class="exam-container mb-8">
                 <div class="mb-2">
