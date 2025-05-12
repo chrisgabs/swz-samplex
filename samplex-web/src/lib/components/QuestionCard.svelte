@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Question } from '../types';
-    import { formatExamName, getCommonAnswer, extractTopic } from '../utils';
+    import { formatExamName, getCommonAnswer, extractTopic, getLatestExamination } from '../utils';
     
     export let questionGroup: Question;
     
@@ -11,8 +11,8 @@
     }
     
     $: exams = Object.keys(questionGroup.question);
+    $: latestExam = getLatestExamination(questionGroup);
     $: commonAnswer = getCommonAnswer(questionGroup);
-    $: topic = extractTopic(questionGroup);
 </script>
 
 <div class="bg-white rounded-lg shadow-md p-6 fade-in mb-6 {expanded ? 'expanded' : ''}" data-number={questionGroup.number}>
@@ -31,7 +31,28 @@
                     <span class="text-gray-500 text-sm">+{exams.length - 3} more</span>
                 {/if}
             </div>
-            <h3 class="text-lg font-medium text-gray-800 mt-2">{topic}</h3>
+            
+            <!-- Show full question from latest exam in summary -->
+            <div class="mt-2">
+                <p class="text-gray-800">{questionGroup.question[latestExam]}</p>
+                
+                {#if questionGroup.choices[latestExam]}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
+                        {#each Object.entries(questionGroup.choices[latestExam]) as [choice, text]}
+                            <div class="p-2 rounded-md border border-gray-200 {choice === questionGroup.answer[latestExam] ? 'choice-correct' : ''}">
+                                <span class="font-medium">{choice}.</span> {text}
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+                
+                {#if questionGroup.answer[latestExam]}
+                    <div class="mt-2 text-sm">
+                        <span class="font-medium text-green-700">Answer:</span> 
+                        <span class="text-green-800">{questionGroup.answer[latestExam]}</span>
+                    </div>
+                {/if}
+            </div>
         </div>
         
         <button 
@@ -47,54 +68,56 @@
     
     <div class="collapsible-content">
         {#each exams as exam}
-            <div class="exam-container mb-8">
-                <div class="mb-2">
-                    <span class="font-semibold text-gray-700">{formatExamName(exam)}</span>
-                </div>
-                
-                <div class="mb-4">
-                    <p class="text-gray-800">{questionGroup.question[exam]}</p>
-                </div>
-                
-                {#if questionGroup.choices[exam]}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                        {#each Object.entries(questionGroup.choices[exam]) as [choice, text]}
-                            <div class="p-2 rounded-md border border-gray-200 {choice === questionGroup.answer[exam] ? 'choice-correct' : ''}">
-                                <span class="font-medium">{choice}.</span> {text}
-                            </div>
-                        {/each}
+            {#if exam !== latestExam}
+                <div class="exam-container mb-8">
+                    <div class="mb-2">
+                        <span class="font-semibold text-gray-700">{formatExamName(exam)}</span>
                     </div>
-                {/if}
-                
-                <div class="flex flex-wrap gap-4 text-sm">
-                    {#if questionGroup.answer[exam]}
-                        <div>
-                            <span class="font-medium text-green-700">Answer:</span> 
-                            <span class="text-green-800">{questionGroup.answer[exam]}</span>
+                    
+                    <div class="mb-4">
+                        <p class="text-gray-800">{questionGroup.question[exam]}</p>
+                    </div>
+                    
+                    {#if questionGroup.choices[exam]}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                            {#each Object.entries(questionGroup.choices[exam]) as [choice, text]}
+                                <div class="p-2 rounded-md border border-gray-200 {choice === questionGroup.answer[exam] ? 'choice-correct' : ''}">
+                                    <span class="font-medium">{choice}.</span> {text}
+                                </div>
+                            {/each}
                         </div>
                     {/if}
                     
-                    {#if questionGroup.reference[exam]}
-                        <div>
-                            <span class="font-medium text-blue-700">Reference:</span> 
-                            <span class="text-blue-800">{questionGroup.reference[exam]}</span>
-                        </div>
-                    {/if}
+                    <div class="flex flex-wrap gap-4 text-sm">
+                        {#if questionGroup.answer[exam]}
+                            <div>
+                                <span class="font-medium text-green-700">Answer:</span> 
+                                <span class="text-green-800">{questionGroup.answer[exam]}</span>
+                            </div>
+                        {/if}
+                        
+                        {#if questionGroup.reference[exam]}
+                            <div>
+                                <span class="font-medium text-blue-700">Reference:</span> 
+                                <span class="text-blue-800">{questionGroup.reference[exam]}</span>
+                            </div>
+                        {/if}
+                    </div>
                 </div>
-            </div>
+            {/if}
         {/each}
     </div>
     
     <div class="mt-2 text-sm text-gray-500 flex justify-between items-center">
         <div>
-            <span class="font-medium">Common Answer:</span> {commonAnswer}
+            <span class="font-medium">From:</span> {formatExamName(latestExam)}
         </div>
         <div>
             <button 
                 class="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
                 on:click={toggleExpand}
             >
-                {expanded ? 'Show Less' : 'Show More'}
+                {expanded ? 'Show Less' : 'Show More Exams'}
             </button>
         </div>
     </div>

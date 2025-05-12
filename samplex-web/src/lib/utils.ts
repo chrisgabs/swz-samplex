@@ -25,6 +25,29 @@ export function getCommonAnswer(questionGroup: Question): string {
 }
 
 /**
+ * Get the latest examination based on sorting criteria
+ * Sort by numerical value if possible, otherwise alphabetically
+ */
+export function getLatestExamination(questionGroup: Question): string {
+    const exams = Object.keys(questionGroup.question);
+    if (exams.length === 0) return '';
+    
+    return exams.sort((a, b) => {
+        // Try to extract numerical values
+        const numA = parseInt(a.replace(/\D/g, ''));
+        const numB = parseInt(b.replace(/\D/g, ''));
+        
+        // If both have numerical values, compare them
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return numB - numA; // Descending order
+        }
+        
+        // Otherwise, compare alphabetically
+        return a.localeCompare(b);
+    })[0];
+}
+
+/**
  * Extract topic from question text
  */
 export function extractTopic(questionGroup: Question): string {
