@@ -684,14 +684,14 @@ function setupExamFilters(questions) {
     // Add a "Select All / Deselect All" toggle button
     const toggleAllButton = document.createElement('button');
     toggleAllButton.id = 'toggleAllExams';
-    toggleAllButton.className = 'px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 mb-2 mr-2';
+    toggleAllButton.className = 'px-4 py-2 rounded-lg bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 mb-2 mr-2 transition-colors duration-200 shadow-sm';
     toggleAllButton.textContent = 'Deselect All';
     toggleAllButton.dataset.state = 'all-selected';
     filtersContainer.appendChild(toggleAllButton);
     
     // Create a warning message div that will be shown when no exams are selected
     const warningDiv = document.createElement('div');
-    warningDiv.className = 'hidden bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded relative mt-2 w-full';
+    warningDiv.className = 'hidden bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded-lg relative mt-2 w-full shadow-sm';
     warningDiv.id = 'noExamsWarning';
     warningDiv.innerHTML = 'Please select at least one examination to display questions.';
     
@@ -703,10 +703,17 @@ function setupExamFilters(questions) {
         const pillButton = document.createElement('button');
         pillButton.id = `exam-filter-${exam}`;
         // Use different styling for selected/unselected state
-        pillButton.className = 'px-3 py-1 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 hover:text-white mb-2 transition-colors duration-200';
+        pillButton.className = 'px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 hover:text-white mb-2 transition-colors duration-200 shadow-sm flex items-center';
         pillButton.dataset.exam = exam;
         pillButton.dataset.selected = 'true'; // All exams selected by default
-        pillButton.textContent = formatExamName(exam);
+        
+        // Add a checkmark icon to indicate selected state
+        pillButton.innerHTML = `
+            <svg class="w-4 h-4 mr-1.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>${formatExamName(exam)}</span>
+        `;
         
         filtersContainer.appendChild(pillButton);
     });
@@ -780,6 +787,9 @@ function setupExamFilters(questions) {
                 pill.dataset.selected = 'false';
                 pill.classList.remove('bg-blue-500', 'text-white');
                 pill.classList.add('bg-gray-200', 'text-gray-700');
+                // Hide checkmark
+                const checkIcon = pill.querySelector('.check-icon');
+                if (checkIcon) checkIcon.classList.add('hidden');
                 selectedExams.delete(pill.dataset.exam);
             });
             this.textContent = 'Select All';
@@ -790,6 +800,9 @@ function setupExamFilters(questions) {
                 pill.dataset.selected = 'true';
                 pill.classList.remove('bg-gray-200', 'text-gray-700');
                 pill.classList.add('bg-blue-500', 'text-white');
+                // Show checkmark
+                const checkIcon = pill.querySelector('.check-icon');
+                if (checkIcon) checkIcon.classList.remove('hidden');
                 selectedExams.add(pill.dataset.exam);
             });
             this.textContent = 'Deselect All';
@@ -811,12 +824,18 @@ function setupExamFilters(questions) {
                 this.dataset.selected = 'false';
                 this.classList.remove('bg-blue-500', 'text-white');
                 this.classList.add('bg-gray-200', 'text-gray-700');
+                // Hide checkmark
+                const checkIcon = this.querySelector('.check-icon');
+                if (checkIcon) checkIcon.classList.add('hidden');
                 selectedExams.delete(exam);
             } else {
                 // Select this exam
                 this.dataset.selected = 'true';
                 this.classList.remove('bg-gray-200', 'text-gray-700');
                 this.classList.add('bg-blue-500', 'text-white');
+                // Show checkmark
+                const checkIcon = this.querySelector('.check-icon');
+                if (checkIcon) checkIcon.classList.remove('hidden');
                 selectedExams.add(exam);
             }
             
@@ -1005,9 +1024,9 @@ function setupDashboardStatsToggle() {
     // Create toggle button
     const toggleButton = document.createElement('button');
     toggleButton.id = 'toggleDashboardStats';
-    toggleButton.className = 'text-gray-600 hover:text-blue-600 text-sm flex items-center mb-3 transition-colors duration-200';
+    toggleButton.className = 'text-gray-600 hover:text-blue-600 text-sm flex items-center mb-3 transition-colors duration-200 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg shadow-sm';
     toggleButton.innerHTML = `
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
         <span>Hide Statistics</span>
@@ -1023,7 +1042,7 @@ function setupDashboardStatsToggle() {
     if (statsHidden) {
         dashboardStats.classList.add('hidden');
         toggleButton.innerHTML = `
-            <svg class="w-4 h-4 mr-1 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-4 h-4 mr-1.5 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
             <span>Show Statistics</span>
@@ -1038,7 +1057,7 @@ function setupDashboardStatsToggle() {
             // Show stats
             dashboardStats.classList.remove('hidden');
             toggleButton.innerHTML = `
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
                 <span>Hide Statistics</span>
@@ -1048,7 +1067,7 @@ function setupDashboardStatsToggle() {
             // Hide stats
             dashboardStats.classList.add('hidden');
             toggleButton.innerHTML = `
-                <svg class="w-4 h-4 mr-1 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-4 h-4 mr-1.5 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
                 <span>Show Statistics</span>
