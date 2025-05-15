@@ -132,14 +132,14 @@ function processActiveBatch(batch) {
     // Update dashboard with batch name and statistics
     updateDashboard(questions, batch.batch_name);
     
-    // Display the questions
+    // Setup exam filters for this batch
+    setupExamFilters(questions);
+    
+    // Display the questions (will be filtered by the active exam filters)
     displayQuestions(questions);
     
     // Setup search functionality for this batch
     setupSearch(questions);
-    
-    // Setup exam filters for this batch
-    setupExamFilters(questions);
 }
 
 function setupImportModal() {
@@ -676,70 +676,166 @@ function setupExamFilters(questions) {
     // Create filter buttons
     const filtersContainer = document.getElementById('examFilters');
     filtersContainer.innerHTML = '';
+    filtersContainer.className = 'flex flex-wrap gap-3 content-center';
     
-    // Add "All" filter
-    const allFilter = document.createElement('button');
-    allFilter.className = 'px-3 py-1 rounded-full bg-gray-200 text-gray-800 text-sm font-medium hover:bg-gray-300 active-filter';
-    allFilter.textContent = 'All Exams';
-    allFilter.dataset.filter = 'all';
-    filtersContainer.appendChild(allFilter);
+    // Add a "Select All / Deselect All" toggle button
+    const toggleAllContainer = document.createElement('div');
+    toggleAllContainer.className = '';
     
-    // Add individual exam filters
+    const toggleAllButton = document.createElement('button');
+    toggleAllButton.id = 'toggleAllExams';
+    toggleAllButton.className = 'px-3 py-1 rounded-md bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200';
+    toggleAllButton.textContent = 'Deselect All';
+    toggleAllButton.dataset.state = 'all-selected';
+    
+    toggleAllContainer.appendChild(toggleAllButton);
+    filtersContainer.appendChild(toggleAllContainer);
+    
+    // Create a warning message div that will be shown when no exams are selected
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'hidden bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded relative mt-2';
+    warningDiv.id = 'noExamsWarning';
+    warningDiv.innerHTML = 'Please select at least one examination to display questions.';
+    
+    // Track selected exams (all selected by default)
+    const selectedExams = new Set(allExams);
+    
+    // Add individual exam filters as checkboxes
     Array.from(allExams).sort().forEach((exam, index) => {
-        const filterButton = document.createElement('button');
-        filterButton.className = `px-3 py-1 rounded-full bg-gray-200 text-gray-800 text-sm font-medium hover:bg-gray-300`;
-        filterButton.textContent = formatExamName(exam);
-        filterButton.dataset.filter = exam;
-        filtersContainer.appendChild(filterButton);
+        const examContainer = document.createElement('div');
+        examContainer.className = 'inline-flex items-center';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `exam-filter-${exam}`;
+        checkbox.className = 'form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out mr-2';
+        checkbox.dataset.exam = exam;
+        checkbox.checked = true; // All exams selected by default
+        
+        const label = document.createElement('label');
+        label.htmlFor = `exam-filter-${exam}`;
+        label.className = 'text-sm font-medium text-gray-700';
+        label.textContent = formatExamName(exam);
+        
+        examContainer.appendChild(checkbox);
+        examContainer.appendChild(label);
+        filtersContainer.appendChild(examContainer);
     });
     
-    // Add event listeners
-    document.querySelectorAll('#examFilters button').forEach(button => {
-        button.addEventListener('click', function() {
-            // Update active class
-            document.querySelectorAll('#examFilters button').forEach(btn => {
-                btn.classList.remove('active-filter');
-            });
-            this.classList.add('active-filter');
-            
-            // Filter questions
-            const filter = this.dataset.filter;
-            const batchSelector = document.getElementById('batchSelector');
-            const selectedBatchIndex = batchSelector.value;
-            
-            // Get the current batch data
-            let currentQuestions;
-            const storedData = localStorage.getItem('importedQuestionData');
-            
-            if (storedData) {
-                try {
-                    const allData = JSON.parse(storedData);
+    // Add the warning after all checkboxes
+    filtersContainer.appendChild(warningDiv);
+    
+    // Function to apply filters based on selected exams
+    function applyExamFilters() {
+        // Show warning if no exams are selected
+        const noExamsWarning = document.getElementById('noExamsWarning');
+        if (selectedExams.size === 0) {
+            noExamsWarning.classList.remove('hidden');
+            // Don't filter questions when no exams are selected
+            return;
+        } else {
+            noExamsWarning.classList.add('hidden');
+        }
+        
+        // Get the current batch data
+        let currentQuestions;
+        const storedData = localStorage.getItem('importedQuestionData');
+        const batchSelector = document.getElementById('batchSelector');
+        const selectedBatchIndex = batchSelector.value;
+        
+        if (storedData) {
+            try {
+                const allData = JSON.parse(storedData);
+                
+                if (Array.isArray(allData)) {
                     
-                    if (Array.isArray(allData)) {
-                        // Multiple batches
-                        if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
-                            currentQuestions = allData[selectedBatchIndex].similar_questions;
-                        }
-                    } else {
-                        // Single batch object
-                        currentQuestions = allData.similar_questions || questions;
+                    // Multiple batches
+                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
+                        currentQuestions = allData[selectedBatchIndex].similar_questions;
                     }
-                } catch (error) {
-                    console.error('Error retrieving current questions for filtering:', error);
-                    currentQuestions = questions;
+                } else {
+                    // Single batch object
+                    currentQuestions = allData.similar_questions || questions;
                 }
-            } else {
+            } catch (error) {
+                console.error('Error retrieving current questions for filtering:', error);
                 currentQuestions = questions;
             }
+        } else {
+            currentQuestions = questions;
+        }
+        
+        // Filter questions - show questions that are NOT in unselected exams
+        // This means we only show questions that have at least one exam from the selected exams
+        const filtered = currentQuestions.filter(q => {
+            const questionExams = Object.keys(q.question);
+            // if questionExams contain any element that does not exist in selectedExams, return false
+            return questionExams.every(exam => selectedExams.has(exam));
+        });
+        
+        displayQuestions(filtered);
+        
+        // Update results count with filtering info
+        const resultsCount = document.getElementById('resultsCount');
+        const batchName = batchSelector.options[batchSelector.selectedIndex].text;
+        resultsCount.textContent = `Showing ${filtered.length} of ${currentQuestions.length} similar question groups (${batchName})`;
+    }
+    
+    // Add event listener for the toggle all button
+    toggleAllButton.addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('#examFilters input[type="checkbox"]');
+        const currentState = this.dataset.state;
+        
+        if (currentState === 'all-selected') {
+            // Deselect all
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                selectedExams.delete(checkbox.dataset.exam);
+            });
+            this.textContent = 'Select All';
+            this.dataset.state = 'none-selected';
+        } else {
+            // Select all
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+                selectedExams.add(checkbox.dataset.exam);
+            });
+            this.textContent = 'Deselect All';
+            this.dataset.state = 'all-selected';
+        }
+        
+        // Apply the filters
+        applyExamFilters();
+    });
+    
+    // Add event listeners to checkboxes
+    document.querySelectorAll('#examFilters input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const exam = this.dataset.exam;
             
-            if (filter === 'all') {
-                displayQuestions(currentQuestions);
+            if (this.checked) {
+                selectedExams.add(exam);
             } else {
-                const filtered = currentQuestions.filter(q => Object.keys(q.question).includes(filter));
-                displayQuestions(filtered);
+                selectedExams.delete(exam);
             }
+            
+            // Update toggle all button state
+            const toggleAllButton = document.getElementById('toggleAllExams');
+            if (selectedExams.size === allExams.size) {
+                toggleAllButton.textContent = 'Deselect All';
+                toggleAllButton.dataset.state = 'all-selected';
+            } else if (selectedExams.size === 0) {
+                toggleAllButton.textContent = 'Select All';
+                toggleAllButton.dataset.state = 'none-selected';
+            }
+            
+            // Apply the filters
+            applyExamFilters();
         });
     });
+    
+    // Apply initial filtering (all exams selected by default)
+    applyExamFilters();
 }
 
 function setupSearch(questions) {
@@ -775,12 +871,32 @@ function setupSearch(questions) {
             currentQuestions = questions;
         }
         
+        // Get currently selected exams
+        const selectedExams = new Set();
+        document.querySelectorAll('#examFilters input[type="checkbox"]').forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedExams.add(checkbox.dataset.exam);
+            }
+        });
+        
+        // First filter by selected exams
+        let filteredByExams = currentQuestions;
+        
+        // Only apply exam filtering if at least one exam is selected
+        if (selectedExams.size > 0) {
+            filteredByExams = currentQuestions.filter(q => {
+                const questionExams = Object.keys(q.question);
+                return questionExams.some(exam => selectedExams.has(exam));
+            });
+        }
+        
+        // Then filter by search term
         if (searchTerm === '') {
-            displayQuestions(currentQuestions);
+            displayQuestions(filteredByExams);
             return;
         }
         
-        const filteredQuestions = currentQuestions.filter(q => {
+        const filteredQuestions = filteredByExams.filter(q => {
             // Search in all exam questions
             return Object.values(q.question).some(text => 
                 text.toLowerCase().includes(searchTerm)
@@ -794,6 +910,11 @@ function setupSearch(questions) {
         });
         
         displayQuestions(filteredQuestions);
+        
+        // Update results count with filtering info
+        const resultsCount = document.getElementById('resultsCount');
+        const batchName = batchSelector.options[batchSelector.selectedIndex].text;
+        resultsCount.textContent = `Showing ${filteredQuestions.length} of ${currentQuestions.length} similar question groups (${batchName})`;
     });
 }
 
@@ -874,4 +995,4 @@ function updateBatchSelector() {
     // Trigger the change event to update the display
     const event = new Event('change');
     batchSelector.dispatchEvent(event);
-} 
+}

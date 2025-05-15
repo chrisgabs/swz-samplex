@@ -230,3 +230,13 @@ I want to change the data structure to the following:
 ```
 
 Please make the necessary changes to the website to accommodate the new data structure. The user should be able to choose which batch of questions to preview from the dashboard. Do not change any existing functionality.
+
+--------------------------------
+
+The website at the moment supports filtering questions by examination where the user can select which questions to show depending on the examination selected. So if for example there are three examinations A B and C, the user can select C and it will only show questions that are available in C.
+
+I want you to change the behavior of the website such that by default all examinations are selected and when the user unselects an examination, the questions that are shown are those that are not in the selected examinations. For example, if there are three examinations A B and C, and the user unselects C, then all questions will be shown except for those that are only in C.
+
+Please make the necessary changes to the website to accommodate the new behavior. If there are no examinations selected, appropriately prompt the user to select at least one examination.
+
+--------------------------------
