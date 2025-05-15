@@ -30,6 +30,9 @@ function initializeApp() {
         // Load the default similar_questions.json file
         loadDefaultData();
     }
+    
+    // Setup dashboard stats toggle
+    setupDashboardStatsToggle();
 }
 
 function loadDefaultData() {
@@ -993,4 +996,67 @@ function updateBatchSelector() {
     // Trigger the change event to update the display
     const event = new Event('change');
     batchSelector.dispatchEvent(event);
+}
+
+function setupDashboardStatsToggle() {
+    // Get the dashboard stats container
+    const dashboardStats = document.getElementById('dashboardStats');
+    
+    // Create toggle button
+    const toggleButton = document.createElement('button');
+    toggleButton.id = 'toggleDashboardStats';
+    toggleButton.className = 'text-gray-600 hover:text-blue-600 text-sm flex items-center mb-3 transition-colors duration-200';
+    toggleButton.innerHTML = `
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+        <span>Hide Statistics</span>
+    `;
+    
+    // Create a container for the toggle button
+    const toggleContainer = document.createElement('div');
+    toggleContainer.className = 'flex justify-end mb-1';
+    toggleContainer.appendChild(toggleButton);
+    
+    // Check if stats should be hidden based on localStorage
+    const statsHidden = localStorage.getItem('dashboardStatsHidden') === 'true';
+    if (statsHidden) {
+        dashboardStats.classList.add('hidden');
+        toggleButton.innerHTML = `
+            <svg class="w-4 h-4 mr-1 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            <span>Show Statistics</span>
+        `;
+    }
+    
+    // Add click event to toggle stats visibility
+    toggleButton.addEventListener('click', () => {
+        const isHidden = dashboardStats.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Show stats
+            dashboardStats.classList.remove('hidden');
+            toggleButton.innerHTML = `
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+                <span>Hide Statistics</span>
+            `;
+            localStorage.setItem('dashboardStatsHidden', 'false');
+        } else {
+            // Hide stats
+            dashboardStats.classList.add('hidden');
+            toggleButton.innerHTML = `
+                <svg class="w-4 h-4 mr-1 transform -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+                <span>Show Statistics</span>
+            `;
+            localStorage.setItem('dashboardStatsHidden', 'true');
+        }
+    });
+    
+    // Insert toggle container before the dashboard stats
+    dashboardStats.parentNode.insertBefore(toggleContainer, dashboardStats);
 }
