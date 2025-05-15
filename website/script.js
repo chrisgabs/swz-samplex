@@ -676,53 +676,39 @@ function setupExamFilters(questions) {
     // Create filter buttons
     const filtersContainer = document.getElementById('examFilters');
     filtersContainer.innerHTML = '';
-    filtersContainer.className = 'flex flex-wrap gap-3 content-center';
+    filtersContainer.className = 'flex flex-wrap gap-2 mb-4';
     
     // Add a "Select All / Deselect All" toggle button
-    const toggleAllContainer = document.createElement('div');
-    toggleAllContainer.className = '';
-    
     const toggleAllButton = document.createElement('button');
     toggleAllButton.id = 'toggleAllExams';
-    toggleAllButton.className = 'px-3 py-1 rounded-md bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200';
+    toggleAllButton.className = 'px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 mb-2 mr-2';
     toggleAllButton.textContent = 'Deselect All';
     toggleAllButton.dataset.state = 'all-selected';
-    
-    toggleAllContainer.appendChild(toggleAllButton);
-    filtersContainer.appendChild(toggleAllContainer);
+    filtersContainer.appendChild(toggleAllButton);
     
     // Create a warning message div that will be shown when no exams are selected
     const warningDiv = document.createElement('div');
-    warningDiv.className = 'hidden bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded relative mt-2';
+    warningDiv.className = 'hidden bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded relative mt-2 w-full';
     warningDiv.id = 'noExamsWarning';
     warningDiv.innerHTML = 'Please select at least one examination to display questions.';
     
     // Track selected exams (all selected by default)
     const selectedExams = new Set(allExams);
     
-    // Add individual exam filters as checkboxes
+    // Add individual exam filters as toggleable pills
     Array.from(allExams).sort().forEach((exam, index) => {
-        const examContainer = document.createElement('div');
-        examContainer.className = 'inline-flex items-center';
+        const pillButton = document.createElement('button');
+        pillButton.id = `exam-filter-${exam}`;
+        // Use different styling for selected/unselected state
+        pillButton.className = 'px-3 py-1 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 hover:text-white mb-2 transition-colors duration-200';
+        pillButton.dataset.exam = exam;
+        pillButton.dataset.selected = 'true'; // All exams selected by default
+        pillButton.textContent = formatExamName(exam);
         
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `exam-filter-${exam}`;
-        checkbox.className = 'form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out mr-2';
-        checkbox.dataset.exam = exam;
-        checkbox.checked = true; // All exams selected by default
-        
-        const label = document.createElement('label');
-        label.htmlFor = `exam-filter-${exam}`;
-        label.className = 'text-sm font-medium text-gray-700';
-        label.textContent = formatExamName(exam);
-        
-        examContainer.appendChild(checkbox);
-        examContainer.appendChild(label);
-        filtersContainer.appendChild(examContainer);
+        filtersContainer.appendChild(pillButton);
     });
     
-    // Add the warning after all checkboxes
+    // Add the warning after all pills
     filtersContainer.appendChild(warningDiv);
     
     // Function to apply filters based on selected exams
@@ -748,7 +734,6 @@ function setupExamFilters(questions) {
                 const allData = JSON.parse(storedData);
                 
                 if (Array.isArray(allData)) {
-                    
                     // Multiple batches
                     if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
                         currentQuestions = allData[selectedBatchIndex].similar_questions;
@@ -783,22 +768,26 @@ function setupExamFilters(questions) {
     
     // Add event listener for the toggle all button
     toggleAllButton.addEventListener('click', function() {
-        const checkboxes = document.querySelectorAll('#examFilters input[type="checkbox"]');
+        const pillButtons = document.querySelectorAll('#examFilters button[data-exam]');
         const currentState = this.dataset.state;
         
         if (currentState === 'all-selected') {
             // Deselect all
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                selectedExams.delete(checkbox.dataset.exam);
+            pillButtons.forEach(pill => {
+                pill.dataset.selected = 'false';
+                pill.classList.remove('bg-blue-500', 'text-white');
+                pill.classList.add('bg-gray-200', 'text-gray-700');
+                selectedExams.delete(pill.dataset.exam);
             });
             this.textContent = 'Select All';
             this.dataset.state = 'none-selected';
         } else {
             // Select all
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = true;
-                selectedExams.add(checkbox.dataset.exam);
+            pillButtons.forEach(pill => {
+                pill.dataset.selected = 'true';
+                pill.classList.remove('bg-gray-200', 'text-gray-700');
+                pill.classList.add('bg-blue-500', 'text-white');
+                selectedExams.add(pill.dataset.exam);
             });
             this.textContent = 'Deselect All';
             this.dataset.state = 'all-selected';
@@ -808,15 +797,24 @@ function setupExamFilters(questions) {
         applyExamFilters();
     });
     
-    // Add event listeners to checkboxes
-    document.querySelectorAll('#examFilters input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+    // Add event listeners to pill buttons
+    document.querySelectorAll('#examFilters button[data-exam]').forEach(pill => {
+        pill.addEventListener('click', function() {
             const exam = this.dataset.exam;
+            const isSelected = this.dataset.selected === 'true';
             
-            if (this.checked) {
-                selectedExams.add(exam);
-            } else {
+            if (isSelected) {
+                // Deselect this exam
+                this.dataset.selected = 'false';
+                this.classList.remove('bg-blue-500', 'text-white');
+                this.classList.add('bg-gray-200', 'text-gray-700');
                 selectedExams.delete(exam);
+            } else {
+                // Select this exam
+                this.dataset.selected = 'true';
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                this.classList.add('bg-blue-500', 'text-white');
+                selectedExams.add(exam);
             }
             
             // Update toggle all button state
@@ -873,9 +871,9 @@ function setupSearch(questions) {
         
         // Get currently selected exams
         const selectedExams = new Set();
-        document.querySelectorAll('#examFilters input[type="checkbox"]').forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedExams.add(checkbox.dataset.exam);
+        document.querySelectorAll('#examFilters button[data-exam]').forEach(pill => {
+            if (pill.dataset.selected === 'true') {
+                selectedExams.add(pill.dataset.exam);
             }
         });
         
