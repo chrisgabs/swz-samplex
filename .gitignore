@@ -11,7 +11,9 @@ __pycache__/
 dataset/*
 python_analyzer/sample_exam*
 python_analyzer/.venv/
+python_analyzer/venv/
 python_analyzer/.env
+python_analyzer/env
 python_analyzer/out
 python_analyzer/in
 python_analyzer/formatter/out
