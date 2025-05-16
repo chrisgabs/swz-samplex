@@ -125,8 +125,8 @@ The output should be a JSON file with the following structure:
   },
   "answer": {
     "Examination_A": "<answer from examination A>",
-    "Examination_B": "<answer from examination B>"
   },
+    "Examination_B": "<answer from examination B>"
   "reference" {
     "Examination_A": {
         "number": <question number of the question from Examination_A>
@@ -240,3 +240,26 @@ I want you to change the behavior of the website such that by default all examin
 Please make the necessary changes to the website to accommodate the new behavior. If there are no examinations selected, appropriately prompt the user to select at least one examination.
 
 --------------------------------
+
+The website currently accepts a JSON file with the following structure:
+
+{
+  "batch_name": "<name of the batch>",
+  "similar_questions": <list of similar questions>
+}
+
+I want to change the website such that the user can upload a JSON file with the following structure:
+
+[
+  "subject_name": "<name of the subject>",
+  "batches": [
+    {
+      "batch_name": "<name of the batch>",
+      "similar_questions": <list of similar questions>
+    },
+    ...
+  ]
+  ...
+]
+
+Please adjust the user interface to accommodate the new data structure. Do not change any existing functionality. The user should be able to select which subject to preview from the dashboard, and then select which batch to preview from the subject.
