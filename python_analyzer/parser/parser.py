@@ -55,7 +55,7 @@ class Parser:
 
 
     def parse_pdf(self, pdf_path: str, temp_out_dir: str = "") -> str:
-        temp_out_path = temp_out_dir + get_file_name(pdf_path) + "_" + time.strftime("%Y%m%d-%H:%M:%S") + ".json"
+        temp_out_path = temp_out_dir + get_file_name(pdf_path) + "_" + time.strftime("%Y%m%d-%H-%M-%S") + ".json"
         parsed_text = ""
         # upload the file
         file = self.client.files.upload(file=pdf_path)
@@ -87,7 +87,7 @@ class Parser:
 
         parsed_text += text
         if temp_out_dir != "":
-            with open(temp_out_path, "w") as f:
+            with open(temp_out_path, "w", encoding="utf-8") as f:
                 f.write(text)
 
         while not continue_prompting and prompts <= 5:
@@ -106,7 +106,7 @@ class Parser:
                 text = remove_trailing_object(text)
             parsed_text += text
             if temp_out_dir != "":
-                with open(temp_out_path, "a") as f:
+                with open(temp_out_path, "a", encoding="utf-8") as f:
                     f.write(text)
 
         print("prompting finished with " + str(prompts) + " prompts")
@@ -131,7 +131,7 @@ def main():
         pdf_path="2024_MED.pdf", 
         temp_out_dir="../out/"
     )
-    with open("2024_MED_FINAL.json", "w") as f:
+    with open("2024_MED_FINAL.json", "w", encoding="utf-8") as f:
         json.dump(output, f)
     print("2024_MED_FINAL.json saved")
 
