@@ -552,6 +552,34 @@ function updateDashboard(questions, batchName = '') {
     document.getElementById('totalQuestions').textContent = questions.length;
     document.getElementById('totalExams').textContent = allExams.size;
     
+    // Ensure consistent styling for dashboard cards
+    document.querySelectorAll('#dashboardStats > div').forEach((card, index) => {
+        card.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+        card.style.borderColor = 'var(--primary)';
+        
+        // Set the correct column span for each card
+        if (index === 0 || index === 1) {
+            card.classList.add('col-span-2');
+        } else if (index === 2) {
+            card.classList.add('col-span-6');
+        }
+        
+        // Update text colors
+        const headingText = card.querySelector('.text-sm.font-medium');
+        if (headingText) headingText.style.color = 'var(--primary)';
+        
+        const valueText = card.querySelector('.text-3xl.font-bold');
+        if (valueText) valueText.style.color = 'var(--text-dark)';
+        
+        // Update icon colors
+        const icon = card.querySelector('svg');
+        if (icon) icon.style.color = 'var(--primary)';
+        
+        // Update legend text
+        const legend = card.querySelector('#examDistributionLegend');
+        if (legend) legend.style.color = 'var(--text-medium)';
+    });
+    
     // Update exam distribution visualization
     updateExamDistributionVisualization(examDistribution);
     
@@ -581,9 +609,9 @@ function updateExamDistributionVisualization(examDistribution) {
     
     // Create the distribution legend
     const legendHTML = examDistribution.map(item => `
-        <div class="flex items-center mt-1">
+        <div class="flex items-center mt-1 w-content">
             <div class="w-3 h-3 ${item.color} rounded-sm mr-1"></div>
-            <span>${formatExamName(item.exam)}: ${item.percentage}% (${item.count})</span>
+            <span style="text-wrap: nowrap; color: var(--text-medium);">${formatExamName(item.exam)}: ${item.percentage}% (${item.count})</span>
         </div>
     `).join('');
     
@@ -678,7 +706,7 @@ function displayQuestions(questions) {
                         ${Object.entries(questionGroup.choices[previewExam]).map(([key, value]) => {
                             const isCorrect = questionGroup.answer[previewExam].toLowerCase() === key.toLowerCase();
                             return `
-                                <div class="py-1 ${isCorrect ? 'correct-answer' : ''}">
+                                <div class="p-1 pl-1.5 ${isCorrect ? 'correct-answer' : ''}">
                                     <span class="${isCorrect ? 'answer-key' : ''}">${key.toUpperCase()}. </span>${value}
                                     ${isCorrect ? `<span class="answer-indicator ml-1 hidden text-green-700">✓</span>` : ''}
                                 </div>
@@ -729,7 +757,7 @@ function displayQuestions(questions) {
                             ${Object.entries(questionGroup.choices[exam]).map(([key, value]) => {
                                 const isCorrect = questionGroup.answer[exam].toLowerCase() === key.toLowerCase();
                                 return `
-                                    <div class="p-2 ${isCorrect ? 'choice-correct' : ''}">
+                                    <div class="p-1 pl-1.5 ${isCorrect ? 'choice-correct' : ''}">
                                         <span class="font-medium">${key.toUpperCase()}:</span> ${value}
                                         ${isCorrect ? '<span class="ml-2 text-green-600 text-sm font-medium">✓</span>' : ''}
                                     </div>
@@ -801,9 +829,9 @@ function displayQuestions(questions) {
             if (isHidden) {
                 // Show the answer
                 answerIndicator.classList.remove('hidden');
-                answerKey.classList.add('font-medium', 'text-green-700');
-                correctAnswer.classList.add('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
-                
+                answerKey.classList.add('font-medium');
+                correctAnswer.classList.add('choice-correct');
+            
                 // Show rationale if it exists
                 const rationalePreview = choicesContainer.querySelector('.rationale-preview');
                 if (rationalePreview) {
@@ -818,8 +846,8 @@ function displayQuestions(questions) {
             } else {
                 // Hide the answer
                 answerIndicator.classList.add('hidden');
-                answerKey.classList.remove('font-medium', 'text-green-700');
-                correctAnswer.classList.remove('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                answerKey.classList.remove('font-medium');
+                correctAnswer.classList.remove('choice-correct', 'p-2');
                 
                 // Hide rationale
                 const rationalePreview = choicesContainer.querySelector('.rationale-preview');
@@ -1267,7 +1295,7 @@ function setupDashboardStatsToggle() {
     
     // Create a container for the toggle button
     const toggleContainer = document.createElement('div');
-    toggleContainer.className = 'flex justify-end mb-1';
+    toggleContainer.className = 'flex justify-start mb-1';
     toggleContainer.appendChild(toggleButton);
     
     // Check if stats should be hidden based on localStorage
