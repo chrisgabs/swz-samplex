@@ -313,7 +313,7 @@ The inputted root directory is expected to have such file structure:
 
 -----------------------------
 
-The current implementation of main.py asks for a batch name and retrieves all of the pds in the given directory. The exected file structure is the following:
+The current implementation of main.py asks for a batch name and retrieves all of the pdf in the given directory. The exected file structure is the following:
 
 ```
 - batch_directory

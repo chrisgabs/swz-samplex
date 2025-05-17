@@ -593,9 +593,15 @@ function displayQuestions(questions) {
         
         // Question body with comparison
         let questionBody = `<div class="mb-6">`;
+
         
         // Add each exam's question
         exams.forEach((exam, i) => {
+            let rationale = ""
+            console.log(questionGroup["rationale"]);
+            if (questionGroup.rationale) {
+                rationale = questionGroup.rationale[exam]
+            }
             const examClass = `exam-pill-${i+1}`;
             questionBody += `
                 <div class="exam-container mb-6 pb-4">
@@ -621,9 +627,13 @@ function displayQuestions(questions) {
                             }).join('')}
                         </div>
                     </div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Rationale:</span> ${rationale}
+                    </div>
                     
                     <div class="mt-4 text-sm text-gray-600">
-                        <span class="font-medium">Reference:</span> ${questionGroup.reference[exam].reference}
+                        <span class="font-medium">Page:</span> ${questionGroup.reference[exam].reference}
                     </div>
                 </div>
             `;

@@ -81,11 +81,11 @@ def merge_files(subject_files_dict):
     return merged_data
 
 
+# python merge_similar_questions.py --root_dir ../out/test_root
 def main():
     parser = argparse.ArgumentParser(description="Merge similar_questions.json files from multiple directories into a subject-batch structure")
     parser.add_argument("--root_dir", type=str, default=".", 
                         help="Root directory to search for similar_questions.json files (default: current directory)")
-    # python merge_similar_questions.py --root_dir ../out/test_root
     args = parser.parse_args()
     
     # Generate the output filename with timestamp - using a Windows-compatible format
