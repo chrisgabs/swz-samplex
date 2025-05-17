@@ -42,9 +42,9 @@
 .exam-container:not(:last-child)::after {
     content: "";
     position: absolute;
-    bottom: -20px;
-    left: 2rem;
-    right: 2rem;
+    bottom: -10px;
+    left: 0px;
+    right: 0px;
     height: 1px;
     background-color: #E5E7EB;
 }
@@ -131,4 +131,317 @@
 @keyframes fadeOut {
     from { opacity: 1; transform: translateY(0); }
     to { opacity: 0; transform: translateY(10px); }
+}
+
+:root {
+  /* Main color palette from image */
+  --forest-green: #7E8C69;
+  --sage-green: #9CAD8C;
+  --strawberry: #E5ADAB;
+  --light-pink: #F1C8CB;
+  --cream: #ECE0DA;
+  
+  /* Dessert palette */
+  --vanilla: #E5E0DB;
+  --caramel: #D0A778;
+  --chocolate: #725C3F;
+  --lemon: #EFF8D8;
+  --mint: #D8D782;
+
+  /* Text colors */
+  --text-dark: #4A4A4A;
+  --text-medium: #6B6B6B;
+  --text-light: #8A8A8A;
+  
+  /* UI States */
+  --primary: var(--forest-green);
+  --primary-hover: #6A7859;
+  --secondary: var(--strawberry);
+  --secondary-hover: #D49B99;
+  --accent: var(--caramel);
+  --accent-hover: #BC9668;
+  
+  /* Backgrounds */
+  --bg-main: #F9F7F5;
+  --bg-card: #FFFFFF;
+  --bg-subtle: var(--cream);
+  
+  /* Utility colors */
+  --success: #94AD7E;
+  --warning: var(--caramel);
+  --error: #D48F8C;
+  --info: #8CA2AD;
+  
+  /* Border colors */
+  --border-light: #E6E0DC;
+  --border-medium: #D6D0CC;
+}
+
+/* Custom color classes for exam pills */
+.bg-forest-green {
+  background-color: var(--forest-green);
+  color: white;
+}
+
+.bg-sage-green {
+  background-color: var(--sage-green);
+  color: white;
+}
+
+.bg-strawberry {
+  background-color: var(--strawberry);
+  color: white;
+}
+
+.bg-light-pink {
+  background-color: var(--light-pink);
+  color: var(--text-dark);
+}
+
+.bg-cream {
+  background-color: var(--cream);
+  color: var(--text-dark);
+}
+
+.bg-caramel {
+  background-color: var(--caramel);
+  color: white;
+}
+
+.bg-vanilla {
+  background-color: var(--vanilla);
+  color: var(--text-dark);
+}
+
+.bg-chocolate {
+  background-color: var(--chocolate);
+  color: white;
+}
+
+.bg-lemon {
+  background-color: var(--lemon);
+  color: var(--text-dark);
+}
+
+.bg-mint {
+  background-color: var(--mint);
+  color: var(--text-dark);
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fade out animation */
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Custom pill colors */
+.exam-pill.bg-blue-500 {
+  background-color: var(--forest-green);
+}
+
+.exam-pill.bg-purple-500 {
+  background-color: var(--sage-green);
+}
+
+.exam-pill.bg-green-500 {
+  background-color: var(--strawberry);
+}
+
+.exam-pill.bg-yellow-500 {
+  background-color: var(--light-pink);
+}
+
+.exam-pill.bg-red-500 {
+  background-color: var(--cream);
+  color: var(--text-dark) !important;
+}
+
+.exam-pill.bg-indigo-500 {
+  background-color: var(--caramel);
+}
+
+.exam-pill.bg-pink-500 {
+  background-color: var(--vanilla);
+  color: var(--text-dark) !important;
+}
+
+.exam-pill.bg-orange-500 {
+  background-color: var(--chocolate);
+}
+
+.exam-pill.bg-teal-500 {
+  background-color: var(--lemon);
+  color: var(--text-dark) !important;
+}
+
+.exam-pill.bg-cyan-500 {
+  background-color: var(--mint);
+  color: var(--text-dark) !important;
+}
+
+/* Custom styling for active elements */
+button:focus, select:focus, input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+}
+
+/* Dashboard cards */
+.bg-gradient-to-br.from-blue-50.to-blue-100 {
+  background: linear-gradient(to bottom right, var(--cream), var(--vanilla));
+  border-color: var(--border-light);
+}
+
+.bg-gradient-to-br.from-purple-50.to-purple-100 {
+  background: linear-gradient(to bottom right, var(--light-pink), var(--strawberry));
+  border-color: var(--secondary);
+}
+
+.bg-gradient-to-br.from-green-50.to-green-100 {
+  background: linear-gradient(to bottom right, var(--sage-green), var(--forest-green));
+  border-color: var(--primary);
+}
+
+/* Text colors for dashboard cards */
+.text-blue-600, .text-blue-800 {
+  color: var(--text-dark);
+}
+
+.text-purple-600, .text-purple-800 {
+  color: var(--text-dark);
+}
+
+.text-green-600, .text-green-800 {
+  color: white;
+}
+
+/* Custom button styles */
+.bg-blue-600, .bg-blue-700 {
+  background-color: var(--primary);
+}
+
+.bg-blue-600:hover, .bg-blue-700:hover {
+  background-color: var(--primary-hover);
+}
+
+.bg-gray-200 {
+  background-color: var(--border-light);
+}
+
+/* Custom form element styles */
+select, input[type="text"], textarea {
+  border-color: var(--border-medium);
+}
+
+select:focus, input[type="text"]:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(126, 140, 105, 0.2);
+}
+
+/* Correct answer styling */
+.choice-correct {
+  background-color: rgba(126, 140, 105, 0.1);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px;
+}
+
+/* Collapsible content */
+.collapsible-content {
+  display: none;
+}
+
+.expanded .collapsible-content {
+  display: block;
+}
+
+/* Success notification */
+.bg-green-500 {
+  background-color: var(--success);
+}
+
+/* Info notification */
+.bg-blue-500 {
+  background-color: var(--info);
+}
+
+/* Answer highlight color */
+.text-green-700 {
+  color: var(--primary);
+}
+
+.bg-green-50 {
+  background-color: rgba(126, 140, 105, 0.1);
+}
+
+.border-green-500 {
+  border-color: var(--primary);
+}
+
+/* Search and filter */
+.ring-blue-500 {
+  --tw-ring-color: var(--primary);
+}
+
+.border-blue-500 {
+  border-color: var(--primary);
+}
+
+/* Warning color */
+.bg-yellow-100 {
+  background-color: rgba(208, 167, 120, 0.2);
+}
+
+.border-yellow-400 {
+  border-color: var(--warning);
+}
+
+.text-yellow-700 {
+  color: var(--text-dark);
+}
+
+/* Error color */
+.bg-red-100 {
+  background-color: rgba(229, 173, 171, 0.2);
+}
+
+.border-red-400 {
+  border-color: var(--error);
+}
+
+.text-red-700, .text-red-600, .text-red-800 {
+  color: var(--error);
+}
+
+/* Card styling */
+.bg-white {
+  background-color: var(--bg-card);
+}
+
+.shadow-md, .shadow-lg {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus rings for accessibility */
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--primary);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 } 

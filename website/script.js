@@ -2,6 +2,7 @@
 let subjects = [];
 let currentSubjectIndex = 0;
 let currentBatchIndex = 0;
+let examColors = {}; // Store exam colors mapping for consistent UI
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the app with default data or from localStorage
@@ -15,7 +16,48 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup batch selection functionality
     setupBatchSelector();
+    
+    // Add CSS for exam pills
+    addExamPillStyles();
 });
+
+function addExamPillStyles() {
+    // Create a style element for the exam pills
+    const style = document.createElement('style');
+    style.textContent = `
+        .exam-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        /* Apply hover effects to buttons with our custom colors */
+        [style*="background-color: var(--primary)"] {
+            transition: background-color 0.2s;
+        }
+        [style*="background-color: var(--primary)"]:hover {
+            background-color: var(--primary-hover) !important;
+        }
+        
+        /* Style toggles and buttons */
+        .toggle-question svg {
+            color: var(--primary);
+        }
+        
+        /* Style answer buttons */
+        .answer-toggle {
+            background-color: rgba(126, 140, 105, 0.1) !important;
+            color: var(--primary) !important;
+        }
+        .answer-toggle:hover {
+            background-color: rgba(126, 140, 105, 0.2) !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 function initializeApp() {
     // Check if we have imported data in localStorage
@@ -217,6 +259,9 @@ function processActiveBatch(batch) {
     // Extract the similar_questions array
     const questions = batch.similar_questions || batch;
     
+    // Apply custom styles to various UI elements
+    applyCustomStyles();
+    
     // Update dashboard with batch name and statistics
     updateDashboard(questions, batch.batch_name);
     
@@ -228,6 +273,49 @@ function processActiveBatch(batch) {
     
     // Setup search functionality for this batch
     setupSearch(questions);
+}
+
+// Helper function to apply our custom palette styles to various UI elements
+function applyCustomStyles() {
+    // Apply colors to selectors
+    document.getElementById('subjectSelector').style.borderColor = 'var(--border-medium)';
+    document.getElementById('batchSelector').style.borderColor = 'var(--border-medium)';
+    
+    // Apply colors to search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.style.borderColor = 'var(--border-medium)';
+    }
+    
+    // Update text colors
+    document.querySelectorAll('.text-gray-700, .text-gray-800').forEach(el => {
+        el.style.color = 'var(--text-dark)';
+    });
+    
+    document.querySelectorAll('.text-gray-500, .text-gray-600').forEach(el => {
+        el.style.color = 'var(--text-medium)';
+    });
+    
+    // Style buttons
+    document.querySelectorAll('.bg-blue-600, .bg-blue-700').forEach(el => {
+        el.classList.remove('bg-blue-600', 'bg-blue-700');
+        el.style.backgroundColor = 'var(--primary)';
+    });
+    
+    document.querySelectorAll('.text-blue-600').forEach(el => {
+        el.classList.remove('text-blue-600');
+        el.style.color = 'var(--primary)';
+    });
+    
+    // Style toggle switches and answer buttons
+    document.querySelectorAll('.bg-blue-50, .bg-blue-100').forEach(el => {
+        el.classList.remove('bg-blue-50', 'bg-blue-100');
+        el.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+        
+        if (el.classList.contains('answer-toggle')) {
+            el.style.color = 'var(--primary)';
+        }
+    });
 }
 
 function setupImportModal() {
@@ -429,9 +517,9 @@ function updateDashboard(questions, batchName = '') {
     // Calculate percentages and prepare for visualization
     const examDistribution = [];
     const availableColors = [
-        'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-yellow-500', 
-        'bg-red-500', 'bg-indigo-500', 'bg-pink-500', 'bg-orange-500',
-        'bg-teal-500', 'bg-cyan-500'
+        'bg-forest-green', 'bg-sage-green', 'bg-strawberry', 'bg-light-pink', 
+        'bg-cream', 'bg-caramel', 'bg-vanilla', 'bg-chocolate',
+        'bg-lemon', 'bg-mint'
     ];
     
     let colorIndex = 0;
@@ -443,6 +531,12 @@ function updateDashboard(questions, batchName = '') {
         const count = examCounts[exam];
         const percentage = (count / totalExamInstances * 100).toFixed(1);
         const color = availableColors[colorIndex % availableColors.length];
+        
+        // Store color in the global examColors object for consistent UI
+        examColors[exam] = {
+            bgClass: color,
+            textClass: 'text-white'
+        };
         
         examDistribution.push({
             exam: exam,
@@ -532,15 +626,20 @@ function displayQuestions(questions) {
         // Get the exam with the largest key
         const previewExam = sortedExams[0];
         
+        // Get color for preview exam
+        const previewExamColor = examColors[previewExam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+        
         // Question header (clickable to expand/collapse)
         let header = `
             <div class="flex justify-between items-start mb-4 cursor-pointer toggle-question" data-target="question-${questionGroup.number}">
                 <h2 class="text-xl font-semibold text-gray-800">Question ${questionGroup.number}</h2>
                 <div class="flex items-center">
                     <div class="mr-4">
-                        ${exams.map((exam, i) => 
-                            `<span class="exam-pill exam-pill-${i+1}">${formatExamName(exam)}</span>`
-                        ).join('')}
+                        ${exams.map((exam, i) => {
+                            // Get color from the global examColors object
+                            const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+                            return `<span class="exam-pill ${examColor.bgClass} ${examColor.textClass}">${formatExamName(exam)}</span>`;
+                        }).join('')}
                     </div>
                     <svg class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -557,9 +656,11 @@ function displayQuestions(questions) {
             <div class="mb-4 border-b pb-4">
                 <div class="mb-2 flex justify-between items-center">
                     <div>
-                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
+                        <span class="${previewExamColor.bgClass} ${previewExamColor.textClass} px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
                     </div>
-                    <button class="answer-toggle text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-full flex items-center" data-toggle-id="${toggleId}">
+                    <button class="answer-toggle text-xs px-3 py-1 rounded-full flex items-center" 
+                            style="background-color: rgba(126, 140, 105, 0.1); color: var(--primary);" 
+                            data-toggle-id="${toggleId}">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -584,7 +685,7 @@ function displayQuestions(questions) {
                             `;
                         }).join('')}
                         ${questionGroup.rationale && questionGroup.rationale[previewExam] ? `
-                        <div class="rationale-preview mt-3 border-l-4 border-blue-200 py-2 px-4 bg-blue-50 rounded-r-md text-gray-700 hidden">
+                        <div class="rationale-preview mt-3 border-l-4 border-gray-200 py-2 px-4 bg-gray-50 rounded-r-md text-gray-700 hidden">
                             <span class="font-medium mb-1">Rationale:</span>
                             <span>${questionGroup.rationale[previewExam]}</span>
                         </div>
@@ -608,12 +709,15 @@ function displayQuestions(questions) {
             if (questionGroup.rationale) {
                 rationale = questionGroup.rationale[exam]
             }
-            const examClass = `exam-pill-${i+1}`;
+            
+            // Get color from the global examColors object
+            const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+            
             questionBody += `
                 <div class="exam-container mb-6 pb-4">
-                    <div class="flex items-center mb-2">
-                        <span class="exam-pill ${examClass}">${formatExamName(exam)}</span>
-                        <span class="text-sm text-gray-500 ml-2">Q${questionGroup.reference[exam].number} - ${questionGroup.reference[exam].section}</span>
+                    <div class="flex items-center mb-4">
+                        <span class="exam-pill ${examColor.bgClass} ${examColor.textClass} mb-0">${formatExamName(exam)}</span>
+                        <span class="text-sm text-gray-500">Q${questionGroup.reference[exam].number} - ${questionGroup.reference[exam].section}</span>
                     </div>
                     <div class="text-gray-700 mb-4 pl-4 border-l-4 border-gray-200">
                         ${highlightDifferences(questionGroup.question[exam], questionGroup.question)}
@@ -627,7 +731,7 @@ function displayQuestions(questions) {
                                 return `
                                     <div class="p-2 ${isCorrect ? 'choice-correct' : ''}">
                                         <span class="font-medium">${key.toUpperCase()}:</span> ${value}
-                                        ${isCorrect ? '<span class="ml-2 text-green-600 text-sm font-medium">(Correct Answer)</span>' : ''}
+                                        ${isCorrect ? '<span class="ml-2 text-green-600 text-sm font-medium">✓</span>' : ''}
                                     </div>
                                 `;
                             }).join('')}
@@ -636,7 +740,7 @@ function displayQuestions(questions) {
 
                     ${rationale ? `
                     <div class="mt-4">
-                        <div class="pl-4 border-l-4 border-blue-200 py-2 px-4 bg-blue-50 rounded-r-md text-gray-700">
+                        <div class="pl-4 border-l-4 border-gray-200 py-2 px-4 bg-gray-50 rounded-r-md text-gray-700">
                             <span class="font-medium mb-1">Rationale:</span>
                             <span>${rationale}</span>
                         </div>
@@ -832,7 +936,9 @@ function setupExamFilters(questions) {
     // Add a "Select All / Deselect All" toggle button
     const toggleAllButton = document.createElement('button');
     toggleAllButton.id = 'toggleAllExams';
-    toggleAllButton.className = 'px-4 py-2 rounded-lg bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 mb-2 mr-2 transition-colors duration-200 shadow-sm';
+    toggleAllButton.className = 'px-4 py-2 rounded-lg text-sm font-medium mb-2 mr-2 transition-colors duration-200 shadow-sm';
+    toggleAllButton.style.backgroundColor = 'rgba(126, 140, 105, 0.2)';
+    toggleAllButton.style.color = 'var(--primary)';
     toggleAllButton.textContent = 'Deselect All';
     toggleAllButton.dataset.state = 'all-selected';
     filtersContainer.appendChild(toggleAllButton);
@@ -850,10 +956,16 @@ function setupExamFilters(questions) {
     Array.from(allExams).sort().forEach((exam, index) => {
         const pillButton = document.createElement('button');
         pillButton.id = `exam-filter-${exam}`;
+        
+        // Get the color for this exam from the global examColors object
+        const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+        
         // Use different styling for selected/unselected state
-        pillButton.className = 'px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 hover:text-white mb-2 transition-colors duration-200 shadow-sm flex items-center';
+        pillButton.className = `px-4 py-2 rounded-lg ${examColor.bgClass} ${examColor.textClass} text-sm font-medium hover:opacity-90 mb-2 transition-colors duration-200 shadow-sm flex items-center`;
         pillButton.dataset.exam = exam;
         pillButton.dataset.selected = 'true'; // All exams selected by default
+        pillButton.dataset.bgColor = examColor.bgClass;
+        pillButton.dataset.textColor = examColor.textClass;
         
         // Add a checkmark icon to indicate selected state
         pillButton.innerHTML = `
@@ -911,26 +1023,34 @@ function setupExamFilters(questions) {
         if (currentState === 'all-selected') {
             // Deselect all
             pillButtons.forEach(pill => {
+                const exam = pill.dataset.exam;
+                const bgColor = pill.dataset.bgColor;
+                const textColor = pill.dataset.textColor;
+                
                 pill.dataset.selected = 'false';
-                pill.classList.remove('bg-blue-500', 'text-white');
+                pill.classList.remove(bgColor, textColor);
                 pill.classList.add('bg-gray-200', 'text-gray-700');
                 // Hide checkmark
                 const checkIcon = pill.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.add('hidden');
-                selectedExams.delete(pill.dataset.exam);
+                selectedExams.delete(exam);
             });
             this.textContent = 'Select All';
             this.dataset.state = 'none-selected';
         } else {
             // Select all
             pillButtons.forEach(pill => {
+                const exam = pill.dataset.exam;
+                const bgColor = pill.dataset.bgColor;
+                const textColor = pill.dataset.textColor;
+                
                 pill.dataset.selected = 'true';
                 pill.classList.remove('bg-gray-200', 'text-gray-700');
-                pill.classList.add('bg-blue-500', 'text-white');
+                pill.classList.add(bgColor, textColor);
                 // Show checkmark
                 const checkIcon = pill.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.remove('hidden');
-                selectedExams.add(pill.dataset.exam);
+                selectedExams.add(exam);
             });
             this.textContent = 'Deselect All';
             this.dataset.state = 'all-selected';
@@ -945,11 +1065,13 @@ function setupExamFilters(questions) {
         pill.addEventListener('click', function() {
             const exam = this.dataset.exam;
             const isSelected = this.dataset.selected === 'true';
+            const bgColor = this.dataset.bgColor;
+            const textColor = this.dataset.textColor;
             
             if (isSelected) {
                 // Deselect this exam
                 this.dataset.selected = 'false';
-                this.classList.remove('bg-blue-500', 'text-white');
+                this.classList.remove(bgColor, textColor);
                 this.classList.add('bg-gray-200', 'text-gray-700');
                 // Hide checkmark
                 const checkIcon = this.querySelector('.check-icon');
@@ -959,7 +1081,7 @@ function setupExamFilters(questions) {
                 // Select this exam
                 this.dataset.selected = 'true';
                 this.classList.remove('bg-gray-200', 'text-gray-700');
-                this.classList.add('bg-blue-500', 'text-white');
+                this.classList.add(bgColor, textColor);
                 // Show checkmark
                 const checkIcon = this.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.remove('hidden');
@@ -1133,7 +1255,9 @@ function setupDashboardStatsToggle() {
     // Create toggle button
     const toggleButton = document.createElement('button');
     toggleButton.id = 'toggleDashboardStats';
-    toggleButton.className = 'text-gray-600 hover:text-blue-600 text-sm flex items-center mb-3 transition-colors duration-200 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg shadow-sm';
+    toggleButton.className = 'text-sm flex items-center mb-3 transition-colors duration-200 px-3 py-1.5 rounded-lg shadow-sm';
+    toggleButton.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+    toggleButton.style.color = 'var(--primary)';
     toggleButton.innerHTML = `
         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
