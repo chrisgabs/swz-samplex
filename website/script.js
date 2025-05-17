@@ -583,6 +583,12 @@ function displayQuestions(questions) {
                                 </div>
                             `;
                         }).join('')}
+                        ${questionGroup.rationale && questionGroup.rationale[previewExam] ? `
+                        <div class="rationale-preview mt-3 border-l-4 border-blue-200 py-2 px-4 bg-blue-50 rounded-r-md text-gray-700 hidden">
+                            <span class="font-medium mb-1">Rationale:</span>
+                            <span>${questionGroup.rationale[previewExam]}</span>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -628,9 +634,14 @@ function displayQuestions(questions) {
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <span class="font-medium">Rationale:</span> ${rationale}
+                    ${rationale ? `
+                    <div class="mt-4">
+                        <div class="pl-4 border-l-4 border-blue-200 py-2 px-4 bg-blue-50 rounded-r-md text-gray-700">
+                            <span class="font-medium mb-1">Rationale:</span>
+                            <span>${rationale}</span>
+                        </div>
                     </div>
+                    ` : ''}
                     
                     <div class="mt-4 text-sm text-gray-600">
                         <span class="font-medium">Page:</span> ${questionGroup.reference[exam].reference}
@@ -689,6 +700,12 @@ function displayQuestions(questions) {
                 answerKey.classList.add('font-medium', 'text-green-700');
                 correctAnswer.classList.add('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
                 
+                // Show rationale if it exists
+                const rationalePreview = choicesContainer.querySelector('.rationale-preview');
+                if (rationalePreview) {
+                    rationalePreview.classList.remove('hidden');
+                }
+                
                 // Update button text and icon
                 this.innerHTML = `
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -699,6 +716,12 @@ function displayQuestions(questions) {
                 answerIndicator.classList.add('hidden');
                 answerKey.classList.remove('font-medium', 'text-green-700');
                 correctAnswer.classList.remove('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                
+                // Hide rationale
+                const rationalePreview = choicesContainer.querySelector('.rationale-preview');
+                if (rationalePreview) {
+                    rationalePreview.classList.add('hidden');
+                }
                 
                 // Update button text and icon
                 this.innerHTML = `
