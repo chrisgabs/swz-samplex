@@ -520,9 +520,9 @@ function updateDashboard(questions, batchName = '') {
     // Calculate percentages and prepare for visualization
     const examDistribution = [];
     const availableColors = [
-        'bg-forest-green', 'bg-sage-green', 'bg-strawberry', 'bg-light-pink', 
-        'bg-cream', 'bg-caramel', 'bg-vanilla', 'bg-chocolate',
-        'bg-lemon', 'bg-mint'
+        'bg-forest-green', 'bg-sage-green', 'bg-strawberry', 
+        'bg-light-pink', 'bg-mint', 'bg-caramel',
+        'bg-chocolate'
     ];
     
     let colorIndex = 0;
