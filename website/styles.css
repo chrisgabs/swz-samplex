@@ -453,4 +453,23 @@ select:focus, input[type="text"]:focus, textarea:focus {
   #dashboardStats > div:nth-child(3) {
     grid-column: span 10 !important;
   }
+}
+
+/* Scroll to top button styles */
+#scrollToTopBtn {
+  transition: all 0.3s ease;
+}
+
+#scrollToTopBtn:hover {
+  transform: translateY(-5px);
+  background-color: var(--primary-hover) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+#scrollToTopBtn img {
+  transition: transform 0.3s ease;
+}
+
+#scrollToTopBtn:hover img {
+  transform: scale(1.1);
 } 

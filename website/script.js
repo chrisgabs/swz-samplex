@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add CSS for exam pills
     addExamPillStyles();
+    
+    // Setup scroll to top button
+    setupScrollToTopButton();
 });
 
 function addExamPillStyles() {
@@ -1335,4 +1338,27 @@ function setupDashboardStatsToggle() {
     
     // Insert toggle container before the dashboard stats
     dashboardStats.parentNode.insertBefore(toggleContainer, dashboardStats);
+}
+
+function setupScrollToTopButton() {
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    
+    // Show button when page is scrolled down
+    window.addEventListener('scroll', () => {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            scrollToTopBtn.classList.remove('opacity-0', 'invisible');
+            scrollToTopBtn.classList.add('opacity-100');
+        } else {
+            scrollToTopBtn.classList.remove('opacity-100');
+            scrollToTopBtn.classList.add('opacity-0', 'invisible');
+        }
+    });
+    
+    // Scroll to top when button is clicked
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
 }
