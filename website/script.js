@@ -733,7 +733,6 @@ function displayQuestions(questions) {
         // Add each exam's question
         exams.forEach((exam, i) => {
             let rationale = ""
-            console.log(questionGroup["rationale"]);
             if (questionGroup.rationale) {
                 rationale = questionGroup.rationale[exam]
             }
@@ -745,7 +744,7 @@ function displayQuestions(questions) {
                 <div class="exam-container mb-6 pb-4">
                     <div class="flex items-center mb-4">
                         <span class="exam-pill ${examColor.bgClass} ${examColor.textClass} mb-0">${formatExamName(exam)}</span>
-                        <span class="text-sm text-gray-500">Q${questionGroup.reference[exam].number} - ${questionGroup.reference[exam].section}</span>
+                        <span class="text-sm text-gray-500">#${questionGroup.reference[exam].number}</span>
                     </div>
                     <div class="text-gray-700 mb-4 pl-4 border-l-4 border-gray-200">
                         ${highlightDifferences(questionGroup.question[exam], questionGroup.question)}
@@ -989,7 +988,7 @@ function setupExamFilters(questions) {
         const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
         
         // Use different styling for selected/unselected state
-        pillButton.className = `px-4 py-2 rounded-lg ${examColor.bgClass} ${examColor.textClass} text-sm font-medium hover:opacity-90 mb-2 transition-colors duration-200 shadow-sm flex items-center`;
+        pillButton.className = `px-2 py-2 rounded-lg ${examColor.bgClass} ${examColor.textClass} text-sm font-medium hover:opacity-90 mb-2 transition-colors duration-200 shadow-sm flex items-center`;
         pillButton.dataset.exam = exam;
         pillButton.dataset.selected = 'true'; // All exams selected by default
         pillButton.dataset.bgColor = examColor.bgClass;
@@ -997,9 +996,6 @@ function setupExamFilters(questions) {
         
         // Add a checkmark icon to indicate selected state
         pillButton.innerHTML = `
-            <svg class="w-4 h-4 mr-1.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
             <span>${formatExamName(exam)}</span>
         `;
         

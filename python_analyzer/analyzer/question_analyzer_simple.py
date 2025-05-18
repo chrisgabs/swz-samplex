@@ -155,6 +155,7 @@ def clean_question(q: dict) -> dict:
     q["section"] = q.get("section", "") or ""
     q["question"] = q.get("question", "") or ""
     q["number"] = q.get("number", -1) or -1
+    q["rationale"] = q.get("rationale", "") or ""
     return q
 
 def find_similar_questions(examinations: list[Exam]):
@@ -229,6 +230,7 @@ def format_output(similar_groups):
             "question": {},
             "choices": {},
             "answer": {},
+            "rationale": {},
             "reference": {}
         }
         
@@ -250,7 +252,10 @@ def format_output(similar_groups):
                 "section": question["section"],
                 "reference": question["reference"]
             }
-        
+
+            # Add rationale
+            result["rationale"][exam_name] = question["rationale"]
+            
         results.append(result)
     
     return results

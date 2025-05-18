@@ -313,7 +313,7 @@ The inputted root directory is expected to have such file structure:
 
 -----------------------------
 
-The current implementation of main.py asks for a batch name and retrieves all of the pdf in the given directory. The exected file structure is the following:
+The current implementation of main.py asks for a batch name and retrieves all of the pdf in the given batch directory. The exected file structure is the following:
 
 ```
 - batch_directory
@@ -351,4 +351,4 @@ Please modify main.py such that instead of taking in a batch directory, it shoul
   ...
 ```
 
-The program should first ask the user if it will be processing a root directory or a batch directory. If the indicates a batch directory, then proceed with the existing functionality. But if the user wants to process a root directory then process all subdirectories inside the root directory. The output should follow the root directory's file structure and file names.
+The program should first ask the user if it will be processing a root directory or a batch directory. If the user indicates a batch directory, then proceed with the existing functionality. But if the user wants to process a root directory then process all subdirectories inside the root directory. The output should follow the root directory's file structure and file names.
