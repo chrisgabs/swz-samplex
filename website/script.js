@@ -1,6 +1,8 @@
 // Global variables
-let batches = [];
+let subjects = [];
+let currentSubjectIndex = 0;
 let currentBatchIndex = 0;
+let examColors = {}; // Store exam colors mapping for consistent UI
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the app with default data or from localStorage
@@ -9,9 +11,56 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup the import functionality
     setupImportModal();
     
+    // Setup subject selection functionality
+    setupSubjectSelector();
+    
     // Setup batch selection functionality
     setupBatchSelector();
+    
+    // Add CSS for exam pills
+    addExamPillStyles();
+    
+    // Setup scroll to top button
+    setupScrollToTopButton();
 });
+
+function addExamPillStyles() {
+    // Create a style element for the exam pills
+    const style = document.createElement('style');
+    style.textContent = `
+        .exam-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        /* Apply hover effects to buttons with our custom colors */
+        [style*="background-color: var(--primary)"] {
+            transition: background-color 0.2s;
+        }
+        [style*="background-color: var(--primary)"]:hover {
+            background-color: var(--primary-hover) !important;
+        }
+        
+        /* Style toggles and buttons */
+        .toggle-question svg {
+            color: var(--primary);
+        }
+        
+        /* Style answer buttons */
+        .answer-toggle {
+            background-color: rgba(126, 140, 105, 0.1) !important;
+            color: var(--primary) !important;
+        }
+        .answer-toggle:hover {
+            background-color: rgba(126, 140, 105, 0.2) !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 function initializeApp() {
     // Check if we have imported data in localStorage
@@ -45,15 +94,54 @@ function loadDefaultData() {
             return response.json();
         })
         .then(data => {
-            // Check if the loaded data is already in the new format (with batch_name and similar_questions)
-            // If not, convert it to the new format
-            if (!data.batch_name) {
-                data = {
-                    batch_name: "Default Batch",
-                    similar_questions: data
-                };
+            // Convert to new format with subjects and batches if needed
+            let formattedData;
+            
+            // Check if the data is already in the new subject-batch format
+            if (Array.isArray(data) && data.length > 0 && data[0].subject_name && data[0].batches) {
+                // Already in the new format
+                formattedData = data;
+            } 
+            // Check if it's in the batch format
+            else if (Array.isArray(data) && data.length > 0 && data[0].batch_name) {
+                // Convert batch format to subject-batch format
+                formattedData = [{
+                    subject_name: "Default Subject",
+                    batches: data
+                }];
             }
-            processQuestionData(data);
+            // Check if it's a single batch object
+            else if (data.batch_name) {
+                // Convert single batch to subject-batch format
+                formattedData = [{
+                    subject_name: "Default Subject",
+                    batches: [data]
+                }];
+            }
+            // Check if it's the old format (just an array of questions)
+            else if (Array.isArray(data)) {
+                // Convert old format to subject-batch format
+                formattedData = [{
+                    subject_name: "Default Subject",
+                    batches: [{
+                        batch_name: "Default Batch",
+                        similar_questions: data
+                    }]
+                }];
+            }
+            // Single question object
+            else {
+                // Convert to subject-batch format
+                formattedData = [{
+                    subject_name: "Default Subject",
+                    batches: [{
+                        batch_name: "Default Batch",
+                        similar_questions: [data]
+                    }]
+                }];
+            }
+            
+            processQuestionData(formattedData);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -66,45 +154,86 @@ function loadDefaultData() {
         });
 }
 
+function setupSubjectSelector() {
+    const subjectSelector = document.getElementById('subjectSelector');
+    
+    subjectSelector.addEventListener('change', () => {
+        const selectedSubjectIndex = parseInt(subjectSelector.value);
+        currentSubjectIndex = selectedSubjectIndex;
+        
+        // Update batch selector with batches from the selected subject
+        populateBatchSelector(subjects[selectedSubjectIndex].batches);
+        
+        // Reset to first batch in the new subject
+        currentBatchIndex = 0;
+        const batchSelector = document.getElementById('batchSelector');
+        if (batchSelector.options.length > 0) {
+            batchSelector.selectedIndex = 0;
+            
+            // Process the first batch of the selected subject
+            processActiveBatch(subjects[selectedSubjectIndex].batches[0]);
+        }
+    });
+}
+
 function setupBatchSelector() {
     const batchSelector = document.getElementById('batchSelector');
     
     batchSelector.addEventListener('change', () => {
-        const selectedBatchIndex = batchSelector.value;
-        const storedData = localStorage.getItem('importedQuestionData');
+        const selectedBatchIndex = parseInt(batchSelector.value);
+        currentBatchIndex = selectedBatchIndex;
         
-        if (storedData) {
-            try {
-                const allData = JSON.parse(storedData);
-                
-                // If it's an array of batches
-                if (Array.isArray(allData)) {
-                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
-                        processActiveBatch(allData[selectedBatchIndex]);
-                    }
-                } else {
-                    // If there's only one batch object
-                    processActiveBatch(allData);
-                }
-                
-            } catch (error) {
-                console.error('Error processing batch selection:', error);
+        if (subjects && subjects.length > 0) {
+            const currentSubject = subjects[currentSubjectIndex];
+            if (currentSubject && currentSubject.batches && 
+                selectedBatchIndex >= 0 && selectedBatchIndex < currentSubject.batches.length) {
+                processActiveBatch(currentSubject.batches[selectedBatchIndex]);
             }
         }
     });
 }
 
 function processQuestionData(data) {
-    // Check if data is an array of batches or a single batch
-    if (Array.isArray(data) && data.length > 0 && data[0].batch_name) {
-        // It's an array of batches
-        populateBatchSelector(data);
-        // Process the first batch as default
-        processActiveBatch(data[0]);
+    // Store the subjects data
+    subjects = data;
+    
+    // Populate the subject selector
+    populateSubjectSelector(subjects);
+    
+    // If there are subjects, process the first one
+    if (subjects && subjects.length > 0) {
+        // Set the first subject as active
+        currentSubjectIndex = 0;
+        
+        // Populate batch selector with batches from the first subject
+        populateBatchSelector(subjects[0].batches);
+        
+        // Process the first batch of the first subject
+        if (subjects[0].batches && subjects[0].batches.length > 0) {
+            currentBatchIndex = 0;
+            processActiveBatch(subjects[0].batches[0]);
+        }
+    }
+}
+
+function populateSubjectSelector(subjects) {
+    const subjectSelector = document.getElementById('subjectSelector');
+    subjectSelector.innerHTML = '';
+    
+    if (Array.isArray(subjects) && subjects.length > 0) {
+        subjects.forEach((subject, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = subject.subject_name || `Subject ${index + 1}`;
+            subjectSelector.appendChild(option);
+        });
     } else {
-        // It's a single batch (or old format)
-        populateBatchSelector([data]);
-        processActiveBatch(data);
+        // No subjects available
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No subjects available';
+        option.disabled = true;
+        subjectSelector.appendChild(option);
     }
 }
 
@@ -112,7 +241,7 @@ function populateBatchSelector(batches) {
     const batchSelector = document.getElementById('batchSelector');
     batchSelector.innerHTML = '';
     
-    if (Array.isArray(batches)) {
+    if (Array.isArray(batches) && batches.length > 0) {
         batches.forEach((batch, index) => {
             const option = document.createElement('option');
             option.value = index;
@@ -120,10 +249,11 @@ function populateBatchSelector(batches) {
             batchSelector.appendChild(option);
         });
     } else {
-        // Single batch object
+        // No batches available
         const option = document.createElement('option');
-        option.value = 0;
-        option.textContent = batches.batch_name || 'Default Batch';
+        option.value = '';
+        option.textContent = 'No batches available';
+        option.disabled = true;
         batchSelector.appendChild(option);
     }
 }
@@ -131,6 +261,9 @@ function populateBatchSelector(batches) {
 function processActiveBatch(batch) {
     // Extract the similar_questions array
     const questions = batch.similar_questions || batch;
+    
+    // Apply custom styles to various UI elements
+    applyCustomStyles();
     
     // Update dashboard with batch name and statistics
     updateDashboard(questions, batch.batch_name);
@@ -143,6 +276,49 @@ function processActiveBatch(batch) {
     
     // Setup search functionality for this batch
     setupSearch(questions);
+}
+
+// Helper function to apply our custom palette styles to various UI elements
+function applyCustomStyles() {
+    // Apply colors to selectors
+    document.getElementById('subjectSelector').style.borderColor = 'var(--border-medium)';
+    document.getElementById('batchSelector').style.borderColor = 'var(--border-medium)';
+    
+    // Apply colors to search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.style.borderColor = 'var(--border-medium)';
+    }
+    
+    // Update text colors
+    document.querySelectorAll('.text-gray-700, .text-gray-800').forEach(el => {
+        el.style.color = 'var(--text-dark)';
+    });
+    
+    document.querySelectorAll('.text-gray-500, .text-gray-600').forEach(el => {
+        el.style.color = 'var(--text-medium)';
+    });
+    
+    // Style buttons
+    document.querySelectorAll('.bg-blue-600, .bg-blue-700').forEach(el => {
+        el.classList.remove('bg-blue-600', 'bg-blue-700');
+        el.style.backgroundColor = 'var(--primary)';
+    });
+    
+    document.querySelectorAll('.text-blue-600').forEach(el => {
+        el.classList.remove('text-blue-600');
+        el.style.color = 'var(--primary)';
+    });
+    
+    // Style toggle switches and answer buttons
+    document.querySelectorAll('.bg-blue-50, .bg-blue-100').forEach(el => {
+        el.classList.remove('bg-blue-50', 'bg-blue-100');
+        el.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+        
+        if (el.classList.contains('answer-toggle')) {
+            el.style.color = 'var(--primary)';
+        }
+    });
 }
 
 function setupImportModal() {
@@ -193,42 +369,70 @@ function setupImportModal() {
         try {
             const data = JSON.parse(jsonText);
             
-            // Validate the new structure
+            // Validate the new structure with subjects and batches
             if (Array.isArray(data)) {
-                // Array of batch objects
-                if (data.length === 0) {
-                    throw new Error('JSON data must contain at least one batch.');
-                }
-                
-                // Check if each item has batch_name and similar_questions array
-                for (const batch of data) {
-                    if (!batch.batch_name || !Array.isArray(batch.similar_questions) || batch.similar_questions.length === 0) {
-                        throw new Error('Each batch must have a batch_name and similar_questions array.');
+                // Check if it's the new subject-batch format
+                if (data.length > 0 && data[0].subject_name && data[0].batches) {
+                    // Validate each subject
+                    for (const subject of data) {
+                        if (!subject.subject_name || !Array.isArray(subject.batches) || subject.batches.length === 0) {
+                            throw new Error('Each subject must have a subject_name and non-empty batches array.');
+                        }
+                        
+                        // Validate each batch in the subject
+                        for (const batch of subject.batches) {
+                            if (!batch.batch_name || !Array.isArray(batch.similar_questions) || batch.similar_questions.length === 0) {
+                                throw new Error('Each batch must have a batch_name and non-empty similar_questions array.');
+                            }
+                            validateQuestionStructure(batch.similar_questions[0]);
+                        }
                     }
-                    validateQuestionStructure(batch.similar_questions[0]);
                 }
-            } else {
-                // Single batch object
-                if (!data.batch_name || !Array.isArray(data.similar_questions) || data.similar_questions.length === 0) {
-                    // Try to check if it's the old format (just an array of questions)
-                    if (Array.isArray(data) && data.length > 0) {
-                        validateQuestionStructure(data[0]);
-                        // Convert to new format
-                        data = {
+                // Check if it's the old batch format
+                else if (data.length > 0 && data[0].batch_name) {
+                    // Convert to new subject-batch format
+                    data = [{
+                        subject_name: "Imported Subject",
+                        batches: data
+                    }];
+                    
+                    // Validate each batch
+                    for (const batch of data[0].batches) {
+                        if (!Array.isArray(batch.similar_questions) || batch.similar_questions.length === 0) {
+                            throw new Error('Each batch must have a non-empty similar_questions array.');
+                        }
+                        validateQuestionStructure(batch.similar_questions[0]);
+                    }
+                }
+                // Check if it's the oldest format (just an array of questions)
+                else {
+                    // Convert to new subject-batch format
+                    data = [{
+                        subject_name: "Imported Subject",
+                        batches: [{
                             batch_name: "Imported Batch",
                             similar_questions: data
-                        };
-                    } else {
-                        validateQuestionStructure(data);
-                    }
-                } else {
-                    // It's a single batch in the new format
-                    validateQuestionStructure(data.similar_questions[0]);
+                        }]
+                    }];
+                    validateQuestionStructure(data[0].batches[0].similar_questions[0]);
                 }
+            } 
+            // Check if it's a single batch object
+            else if (data.batch_name) {
+                // Convert to new subject-batch format
+                data = [{
+                    subject_name: "Imported Subject",
+                    batches: [data]
+                }];
+                validateQuestionStructure(data[0].batches[0].similar_questions[0]);
+            }
+            // Invalid format
+            else {
+                throw new Error('Invalid data format. Expected an array of subjects or batches.');
             }
             
             // Store in localStorage
-            localStorage.setItem('importedQuestionData', jsonText);
+            localStorage.setItem('importedQuestionData', JSON.stringify(data));
             
             // Process the data
             processQuestionData(data);
@@ -316,9 +520,9 @@ function updateDashboard(questions, batchName = '') {
     // Calculate percentages and prepare for visualization
     const examDistribution = [];
     const availableColors = [
-        'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-yellow-500', 
-        'bg-red-500', 'bg-indigo-500', 'bg-pink-500', 'bg-orange-500',
-        'bg-teal-500', 'bg-cyan-500'
+        'bg-forest-green', 'bg-sage-green', 'bg-strawberry', 
+        'bg-light-pink', 'bg-mint', 'bg-caramel',
+        'bg-chocolate'
     ];
     
     let colorIndex = 0;
@@ -330,6 +534,12 @@ function updateDashboard(questions, batchName = '') {
         const count = examCounts[exam];
         const percentage = (count / totalExamInstances * 100).toFixed(1);
         const color = availableColors[colorIndex % availableColors.length];
+        
+        // Store color in the global examColors object for consistent UI
+        examColors[exam] = {
+            bgClass: color,
+            textClass: 'text-white'
+        };
         
         examDistribution.push({
             exam: exam,
@@ -345,12 +555,42 @@ function updateDashboard(questions, batchName = '') {
     document.getElementById('totalQuestions').textContent = questions.length;
     document.getElementById('totalExams').textContent = allExams.size;
     
+    // Ensure consistent styling for dashboard cards
+    document.querySelectorAll('#dashboardStats > div').forEach((card, index) => {
+        card.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+        card.style.borderColor = 'var(--primary)';
+        
+        // Set the correct column span for each card
+        if (index === 0 || index === 1) {
+            card.classList.add('col-span-2');
+        } else if (index === 2) {
+            card.classList.add('col-span-6');
+        }
+        
+        // Update text colors
+        const headingText = card.querySelector('.text-sm.font-medium');
+        if (headingText) headingText.style.color = 'var(--primary)';
+        
+        const valueText = card.querySelector('.text-3xl.font-bold');
+        if (valueText) valueText.style.color = 'var(--text-dark)';
+        
+        // Update icon colors
+        const icon = card.querySelector('svg');
+        if (icon) icon.style.color = 'var(--primary)';
+        
+        // Update legend text
+        const legend = card.querySelector('#examDistributionLegend');
+        if (legend) legend.style.color = 'var(--text-medium)';
+    });
+    
     // Update exam distribution visualization
     updateExamDistributionVisualization(examDistribution);
     
     // Update batch info in the results count
-    const batchInfo = batchName ? `(${batchName})` : '';
-    document.getElementById('resultsCount').textContent = `Showing all ${questions.length} similar question groups ${batchInfo}`;
+    const subjectName = subjects[currentSubjectIndex]?.subject_name || '';
+    const batchInfo = batchName ? `${batchName}` : '';
+    const subjectInfo = subjectName ? `${subjectName} - ` : '';
+    document.getElementById('resultsCount').textContent = `Showing all ${questions.length} similar question groups (${subjectInfo}${batchInfo})`;
 }
 
 function updateExamDistributionVisualization(examDistribution) {
@@ -372,9 +612,9 @@ function updateExamDistributionVisualization(examDistribution) {
     
     // Create the distribution legend
     const legendHTML = examDistribution.map(item => `
-        <div class="flex items-center mt-1">
+        <div class="flex items-center mt-1 w-content">
             <div class="w-3 h-3 ${item.color} rounded-sm mr-1"></div>
-            <span>${formatExamName(item.exam)}: ${item.percentage}% (${item.count})</span>
+            <span style="text-wrap: nowrap; color: var(--text-medium);">${formatExamName(item.exam)}: ${item.percentage}% (${item.count})</span>
         </div>
     `).join('');
     
@@ -417,15 +657,20 @@ function displayQuestions(questions) {
         // Get the exam with the largest key
         const previewExam = sortedExams[0];
         
+        // Get color for preview exam
+        const previewExamColor = examColors[previewExam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+        
         // Question header (clickable to expand/collapse)
         let header = `
             <div class="flex justify-between items-start mb-4 cursor-pointer toggle-question" data-target="question-${questionGroup.number}">
                 <h2 class="text-xl font-semibold text-gray-800">Question ${questionGroup.number}</h2>
                 <div class="flex items-center">
                     <div class="mr-4">
-                        ${exams.map((exam, i) => 
-                            `<span class="exam-pill exam-pill-${i+1}">${formatExamName(exam)}</span>`
-                        ).join('')}
+                        ${exams.map((exam, i) => {
+                            // Get color from the global examColors object
+                            const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+                            return `<span class="exam-pill ${examColor.bgClass} ${examColor.textClass}">${formatExamName(exam)}</span>`;
+                        }).join('')}
                     </div>
                     <svg class="h-6 w-6 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -442,9 +687,11 @@ function displayQuestions(questions) {
             <div class="mb-4 border-b pb-4">
                 <div class="mb-2 flex justify-between items-center">
                     <div>
-                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
+                        <span class="${previewExamColor.bgClass} ${previewExamColor.textClass} px-2 py-1 rounded text-xs font-medium">Preview from ${formatExamName(previewExam)}</span>
                     </div>
-                    <button class="answer-toggle text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-full flex items-center" data-toggle-id="${toggleId}">
+                    <button class="answer-toggle text-xs px-3 py-1 rounded-full flex items-center" 
+                            style="background-color: rgba(126, 140, 105, 0.1); color: var(--primary);" 
+                            data-toggle-id="${toggleId}">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -462,12 +709,18 @@ function displayQuestions(questions) {
                         ${Object.entries(questionGroup.choices[previewExam]).map(([key, value]) => {
                             const isCorrect = questionGroup.answer[previewExam].toLowerCase() === key.toLowerCase();
                             return `
-                                <div class="py-1 ${isCorrect ? 'correct-answer' : ''}">
+                                <div class="p-1 pl-1.5 ${isCorrect ? 'correct-answer' : ''}">
                                     <span class="${isCorrect ? 'answer-key' : ''}">${key.toUpperCase()}. </span>${value}
                                     ${isCorrect ? `<span class="answer-indicator ml-1 hidden text-green-700">✓</span>` : ''}
                                 </div>
                             `;
                         }).join('')}
+                        ${questionGroup.rationale && questionGroup.rationale[previewExam] ? `
+                        <div class="rationale-preview mt-3 border-l-4 border-gray-200 py-2 px-4 bg-gray-50 rounded-r-md text-gray-700 hidden">
+                            <span class="font-medium mb-1">Rationale:</span>
+                            <span>${questionGroup.rationale[previewExam]}</span>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -478,15 +731,23 @@ function displayQuestions(questions) {
         
         // Question body with comparison
         let questionBody = `<div class="mb-6">`;
+
         
         // Add each exam's question
         exams.forEach((exam, i) => {
-            const examClass = `exam-pill-${i+1}`;
+            let rationale = ""
+            if (questionGroup.rationale) {
+                rationale = questionGroup.rationale[exam]
+            }
+            
+            // Get color from the global examColors object
+            const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+            
             questionBody += `
                 <div class="exam-container mb-6 pb-4">
-                    <div class="flex items-center mb-2">
-                        <span class="exam-pill ${examClass}">${formatExamName(exam)}</span>
-                        <span class="text-sm text-gray-500 ml-2">Q${questionGroup.reference[exam].number} - ${questionGroup.reference[exam].section}</span>
+                    <div class="flex items-center mb-4">
+                        <span class="exam-pill ${examColor.bgClass} ${examColor.textClass} mb-0">${formatExamName(exam)}</span>
+                        <span class="text-sm text-gray-500">#${questionGroup.reference[exam].number}</span>
                     </div>
                     <div class="text-gray-700 mb-4 pl-4 border-l-4 border-gray-200">
                         ${highlightDifferences(questionGroup.question[exam], questionGroup.question)}
@@ -498,17 +759,26 @@ function displayQuestions(questions) {
                             ${Object.entries(questionGroup.choices[exam]).map(([key, value]) => {
                                 const isCorrect = questionGroup.answer[exam].toLowerCase() === key.toLowerCase();
                                 return `
-                                    <div class="p-2 ${isCorrect ? 'choice-correct' : ''}">
+                                    <div class="p-1 pl-1.5 ${isCorrect ? 'choice-correct' : ''}">
                                         <span class="font-medium">${key.toUpperCase()}:</span> ${value}
-                                        ${isCorrect ? '<span class="ml-2 text-green-600 text-sm font-medium">(Correct Answer)</span>' : ''}
+                                        ${isCorrect ? '<span class="ml-2 text-green-600 text-sm font-medium">✓</span>' : ''}
                                     </div>
                                 `;
                             }).join('')}
                         </div>
                     </div>
+
+                    ${rationale ? `
+                    <div class="mt-4">
+                        <div class="pl-4 border-l-4 border-gray-200 py-2 px-4 bg-gray-50 rounded-r-md text-gray-700">
+                            <span class="font-medium mb-1">Rationale:</span>
+                            <span>${rationale}</span>
+                        </div>
+                    </div>
+                    ` : ''}
                     
                     <div class="mt-4 text-sm text-gray-600">
-                        <span class="font-medium">Reference:</span> ${questionGroup.reference[exam].reference}
+                        <span class="font-medium">Page:</span> ${questionGroup.reference[exam].reference}
                     </div>
                 </div>
             `;
@@ -561,8 +831,14 @@ function displayQuestions(questions) {
             if (isHidden) {
                 // Show the answer
                 answerIndicator.classList.remove('hidden');
-                answerKey.classList.add('font-medium', 'text-green-700');
-                correctAnswer.classList.add('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                answerKey.classList.add('font-medium');
+                correctAnswer.classList.add('choice-correct');
+            
+                // Show rationale if it exists
+                const rationalePreview = choicesContainer.querySelector('.rationale-preview');
+                if (rationalePreview) {
+                    rationalePreview.classList.remove('hidden');
+                }
                 
                 // Update button text and icon
                 this.innerHTML = `
@@ -572,8 +848,14 @@ function displayQuestions(questions) {
             } else {
                 // Hide the answer
                 answerIndicator.classList.add('hidden');
-                answerKey.classList.remove('font-medium', 'text-green-700');
-                correctAnswer.classList.remove('bg-green-50', 'border-l-2', 'border-green-500', 'pl-2');
+                answerKey.classList.remove('font-medium');
+                correctAnswer.classList.remove('choice-correct', 'p-2');
+                
+                // Hide rationale
+                const rationalePreview = choicesContainer.querySelector('.rationale-preview');
+                if (rationalePreview) {
+                    rationalePreview.classList.add('hidden');
+                }
                 
                 // Update button text and icon
                 this.innerHTML = `
@@ -684,7 +966,9 @@ function setupExamFilters(questions) {
     // Add a "Select All / Deselect All" toggle button
     const toggleAllButton = document.createElement('button');
     toggleAllButton.id = 'toggleAllExams';
-    toggleAllButton.className = 'px-4 py-2 rounded-lg bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 mb-2 mr-2 transition-colors duration-200 shadow-sm';
+    toggleAllButton.className = 'px-4 py-2 rounded-lg text-sm font-medium mb-2 mr-2 transition-colors duration-200 shadow-sm';
+    toggleAllButton.style.backgroundColor = 'rgba(126, 140, 105, 0.2)';
+    toggleAllButton.style.color = 'var(--primary)';
     toggleAllButton.textContent = 'Deselect All';
     toggleAllButton.dataset.state = 'all-selected';
     filtersContainer.appendChild(toggleAllButton);
@@ -702,16 +986,19 @@ function setupExamFilters(questions) {
     Array.from(allExams).sort().forEach((exam, index) => {
         const pillButton = document.createElement('button');
         pillButton.id = `exam-filter-${exam}`;
+        
+        // Get the color for this exam from the global examColors object
+        const examColor = examColors[exam] || { bgClass: 'bg-blue-500', textClass: 'text-white' };
+        
         // Use different styling for selected/unselected state
-        pillButton.className = 'px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 hover:text-white mb-2 transition-colors duration-200 shadow-sm flex items-center';
+        pillButton.className = `px-2 py-2 rounded-lg ${examColor.bgClass} ${examColor.textClass} text-sm font-medium hover:opacity-90 mb-2 transition-colors duration-200 shadow-sm flex items-center`;
         pillButton.dataset.exam = exam;
         pillButton.dataset.selected = 'true'; // All exams selected by default
+        pillButton.dataset.bgColor = examColor.bgClass;
+        pillButton.dataset.textColor = examColor.textClass;
         
         // Add a checkmark icon to indicate selected state
         pillButton.innerHTML = `
-            <svg class="w-4 h-4 mr-1.5 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
             <span>${formatExamName(exam)}</span>
         `;
         
@@ -734,37 +1021,14 @@ function setupExamFilters(questions) {
         }
         
         // Get the current batch data
-        let currentQuestions;
-        const storedData = localStorage.getItem('importedQuestionData');
-        const batchSelector = document.getElementById('batchSelector');
-        const selectedBatchIndex = batchSelector.value;
+        const currentSubject = subjects[currentSubjectIndex];
+        const currentBatch = currentSubject?.batches[currentBatchIndex];
+        const currentQuestions = currentBatch?.similar_questions || questions;
         
-        if (storedData) {
-            try {
-                const allData = JSON.parse(storedData);
-                
-                if (Array.isArray(allData)) {
-                    // Multiple batches
-                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
-                        currentQuestions = allData[selectedBatchIndex].similar_questions;
-                    }
-                } else {
-                    // Single batch object
-                    currentQuestions = allData.similar_questions || questions;
-                }
-            } catch (error) {
-                console.error('Error retrieving current questions for filtering:', error);
-                currentQuestions = questions;
-            }
-        } else {
-            currentQuestions = questions;
-        }
-        
-        // Filter questions - show questions that are NOT in unselected exams
-        // This means we only show questions that have at least one exam from the selected exams
+        // Filter questions - show questions that have at least one exam from the selected exams
         const filtered = currentQuestions.filter(q => {
             const questionExams = Object.keys(q.question);
-            // if questionExams contain any element that does not exist in selectedExams, return false
+            // Check if all question exams are in the selected exams
             return questionExams.every(exam => selectedExams.has(exam));
         });
         
@@ -772,8 +1036,10 @@ function setupExamFilters(questions) {
         
         // Update results count with filtering info
         const resultsCount = document.getElementById('resultsCount');
-        const batchName = batchSelector.options[batchSelector.selectedIndex].text;
-        resultsCount.textContent = `Showing ${filtered.length} of ${currentQuestions.length} similar question groups (${batchName})`;
+        const subjectName = currentSubject?.subject_name || '';
+        const batchName = currentBatch?.batch_name || '';
+        const subjectInfo = subjectName ? `${subjectName} - ` : '';
+        resultsCount.textContent = `Showing ${filtered.length} of ${currentQuestions.length} similar question groups (${subjectInfo}${batchName})`;
     }
     
     // Add event listener for the toggle all button
@@ -784,26 +1050,34 @@ function setupExamFilters(questions) {
         if (currentState === 'all-selected') {
             // Deselect all
             pillButtons.forEach(pill => {
+                const exam = pill.dataset.exam;
+                const bgColor = pill.dataset.bgColor;
+                const textColor = pill.dataset.textColor;
+                
                 pill.dataset.selected = 'false';
-                pill.classList.remove('bg-blue-500', 'text-white');
+                pill.classList.remove(bgColor, textColor);
                 pill.classList.add('bg-gray-200', 'text-gray-700');
                 // Hide checkmark
                 const checkIcon = pill.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.add('hidden');
-                selectedExams.delete(pill.dataset.exam);
+                selectedExams.delete(exam);
             });
             this.textContent = 'Select All';
             this.dataset.state = 'none-selected';
         } else {
             // Select all
             pillButtons.forEach(pill => {
+                const exam = pill.dataset.exam;
+                const bgColor = pill.dataset.bgColor;
+                const textColor = pill.dataset.textColor;
+                
                 pill.dataset.selected = 'true';
                 pill.classList.remove('bg-gray-200', 'text-gray-700');
-                pill.classList.add('bg-blue-500', 'text-white');
+                pill.classList.add(bgColor, textColor);
                 // Show checkmark
                 const checkIcon = pill.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.remove('hidden');
-                selectedExams.add(pill.dataset.exam);
+                selectedExams.add(exam);
             });
             this.textContent = 'Deselect All';
             this.dataset.state = 'all-selected';
@@ -818,11 +1092,13 @@ function setupExamFilters(questions) {
         pill.addEventListener('click', function() {
             const exam = this.dataset.exam;
             const isSelected = this.dataset.selected === 'true';
+            const bgColor = this.dataset.bgColor;
+            const textColor = this.dataset.textColor;
             
             if (isSelected) {
                 // Deselect this exam
                 this.dataset.selected = 'false';
-                this.classList.remove('bg-blue-500', 'text-white');
+                this.classList.remove(bgColor, textColor);
                 this.classList.add('bg-gray-200', 'text-gray-700');
                 // Hide checkmark
                 const checkIcon = this.querySelector('.check-icon');
@@ -832,7 +1108,7 @@ function setupExamFilters(questions) {
                 // Select this exam
                 this.dataset.selected = 'true';
                 this.classList.remove('bg-gray-200', 'text-gray-700');
-                this.classList.add('bg-blue-500', 'text-white');
+                this.classList.add(bgColor, textColor);
                 // Show checkmark
                 const checkIcon = this.querySelector('.check-icon');
                 if (checkIcon) checkIcon.classList.remove('hidden');
@@ -863,33 +1139,13 @@ function setupSearch(questions) {
     
     searchInput.addEventListener('input', () => {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const batchSelector = document.getElementById('batchSelector');
-        const selectedBatchIndex = batchSelector.value;
         
-        // Get the current batch data
-        let currentQuestions;
-        const storedData = localStorage.getItem('importedQuestionData');
+        // Get the current subject and batch
+        const currentSubject = subjects[currentSubjectIndex];
+        const currentBatch = currentSubject?.batches[currentBatchIndex];
         
-        if (storedData) {
-            try {
-                const allData = JSON.parse(storedData);
-                
-                if (Array.isArray(allData)) {
-                    // Multiple batches
-                    if (selectedBatchIndex >= 0 && selectedBatchIndex < allData.length) {
-                        currentQuestions = allData[selectedBatchIndex].similar_questions;
-                    }
-                } else {
-                    // Single batch object
-                    currentQuestions = allData.similar_questions || questions;
-                }
-            } catch (error) {
-                console.error('Error retrieving current questions for search:', error);
-                currentQuestions = questions;
-            }
-        } else {
-            currentQuestions = questions;
-        }
+        // Get the questions from the current batch
+        let currentQuestions = currentBatch?.similar_questions || questions;
         
         // Get currently selected exams
         const selectedExams = new Set();
@@ -933,8 +1189,10 @@ function setupSearch(questions) {
         
         // Update results count with filtering info
         const resultsCount = document.getElementById('resultsCount');
-        const batchName = batchSelector.options[batchSelector.selectedIndex].text;
-        resultsCount.textContent = `Showing ${filteredQuestions.length} of ${currentQuestions.length} similar question groups (${batchName})`;
+        const subjectName = currentSubject?.subject_name || '';
+        const batchName = currentBatch?.batch_name || '';
+        const subjectInfo = subjectName ? `${subjectName} - ` : '';
+        resultsCount.textContent = `Showing ${filteredQuestions.length} of ${currentQuestions.length} similar question groups (${subjectInfo}${batchName})`;
     });
 }
 
@@ -1024,7 +1282,9 @@ function setupDashboardStatsToggle() {
     // Create toggle button
     const toggleButton = document.createElement('button');
     toggleButton.id = 'toggleDashboardStats';
-    toggleButton.className = 'text-gray-600 hover:text-blue-600 text-sm flex items-center mb-3 transition-colors duration-200 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg shadow-sm';
+    toggleButton.className = 'text-sm flex items-center mb-3 transition-colors duration-200 px-3 py-1.5 rounded-lg shadow-sm';
+    toggleButton.style.backgroundColor = 'rgba(126, 140, 105, 0.1)';
+    toggleButton.style.color = 'var(--primary)';
     toggleButton.innerHTML = `
         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -1034,7 +1294,7 @@ function setupDashboardStatsToggle() {
     
     // Create a container for the toggle button
     const toggleContainer = document.createElement('div');
-    toggleContainer.className = 'flex justify-end mb-1';
+    toggleContainer.className = 'flex justify-start mb-1';
     toggleContainer.appendChild(toggleButton);
     
     // Check if stats should be hidden based on localStorage
@@ -1078,4 +1338,27 @@ function setupDashboardStatsToggle() {
     
     // Insert toggle container before the dashboard stats
     dashboardStats.parentNode.insertBefore(toggleContainer, dashboardStats);
+}
+
+function setupScrollToTopButton() {
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    
+    // Show button when page is scrolled down
+    window.addEventListener('scroll', () => {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            scrollToTopBtn.classList.remove('opacity-0', 'invisible');
+            scrollToTopBtn.classList.add('opacity-100');
+        } else {
+            scrollToTopBtn.classList.remove('opacity-100');
+            scrollToTopBtn.classList.add('opacity-0', 'invisible');
+        }
+    });
+    
+    // Scroll to top when button is clicked
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
 }

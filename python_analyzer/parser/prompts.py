@@ -13,6 +13,7 @@ I uploaded a PDF file containing multiple choice questions. Please give me all q
   },
   "answer": "<correct choice letter>",
   "section": "<title of the section the question is based on>",
+  "rationale": "<rationale for the answer found in the PDF, if not found, output an empty string>",
   "reference": "<page number and short note of where in the PDF the answer is found>"
 }
 ```

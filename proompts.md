@@ -125,8 +125,8 @@ The output should be a JSON file with the following structure:
   },
   "answer": {
     "Examination_A": "<answer from examination A>",
-    "Examination_B": "<answer from examination B>"
   },
+    "Examination_B": "<answer from examination B>"
   "reference" {
     "Examination_A": {
         "number": <question number of the question from Examination_A>
@@ -240,3 +240,115 @@ I want you to change the behavior of the website such that by default all examin
 Please make the necessary changes to the website to accommodate the new behavior. If there are no examinations selected, appropriately prompt the user to select at least one examination.
 
 --------------------------------
+
+The website currently accepts a JSON file with the following structure:
+
+{
+  "batch_name": "<name of the batch>",
+  "similar_questions": <list of similar questions>
+}
+
+I want to change the website such that the user can upload a JSON file with the following structure:
+
+[
+  "subject_name": "<name of the subject>",
+  "batches": [
+    {
+      "batch_name": "<name of the batch>",
+      "similar_questions": <list of similar questions>
+    },
+    ...
+  ]
+  ...
+]
+
+Please adjust the user interface to accommodate the new data structure. Do not change any existing functionality. The user should be able to select which subject to preview from the dashboard, and then select which batch to preview from the subject.
+
+--------------------------------
+
+Can you modify merge_similar_questions.py such that it outputs the following structure:
+
+```
+[
+  {
+    "subject_name": "<name of subject_directory>",
+    "batches": [
+      {
+        "batch_name": "name of batch_directory",
+        "similar_questions": [
+          // Question objects from the first similar_questions.json file
+        ]
+      },
+      {
+        "batch_name": "name of batch_directory2",
+        "similar_questions": [
+          // Question objects from the second similar_questions.json file
+        ]
+      }
+      ...
+    ]
+  },
+  ...
+]
+```
+
+The inputted root directory is expected to have such file structure:
+
+```
+- root_directory
+  - subject_directory
+    - batch_directory
+      - similar_questions.json
+    - batch_directory2
+      - similar_questions.json
+    ...
+  - subject_directory2
+    - batch_directory
+      - similar_questions.json
+    - batch_directory2
+      - similar_questions.json
+    ...
+  ...
+```
+
+-----------------------------
+
+The current implementation of main.py asks for a batch name and retrieves all of the pdf in the given batch directory. The exected file structure is the following:
+
+```
+- batch_directory
+  - exam.pdf
+  - exam2.pdf
+  ...
+```
+
+After processing, the code outputs the same file structure but with the processed exam files as json and with an additional file similar_questions.json inside the batch directory.
+
+Please modify main.py such that instead of taking in a batch directory, it should take in a root directory that follows the following file structure:
+
+```
+- root_directory
+  - subject_directory
+    - batch_directory
+      - exam.pdf
+      - exam2.pdf
+      ...
+    - batch_directory2
+      - exam.pdf
+      - exam2.pdf
+      ...
+    ...
+  - subject_directory2
+    - batch_directory
+      - exam.pdf
+      - exam2.pdf
+      ...
+    - batch_directory2
+      - exam.pdf
+      - exam2.pdf
+      ...
+    ...
+  ...
+```
+
+The program should first ask the user if it will be processing a root directory or a batch directory. If the user indicates a batch directory, then proceed with the existing functionality. But if the user wants to process a root directory then process all subdirectories inside the root directory. The output should follow the root directory's file structure and file names.
