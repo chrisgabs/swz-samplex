@@ -639,7 +639,7 @@ function displayQuestions(questions) {
         const questionCard = document.createElement('div');
         questionCard.className = 'bg-white rounded-lg shadow-md p-6 fade-in mb-6';
         questionCard.dataset.number = questionGroup.number;
-        
+
         // Sort exam keys to find the one to preview
         const sortedExams = [...exams].sort((a, b) => {
             // Try numeric sorting first
@@ -653,6 +653,12 @@ function displayQuestions(questions) {
             // Fall back to alphabetical sorting
             return b.localeCompare(a); // Descending order for largest first
         });
+
+        // TODO: Remove this once 2024 exam is fixed (questions on longer have the choices)
+        if (sortedExams.length > 1) {
+            // remove 2024 from sortedExams
+            sortedExams.splice(sortedExams.indexOf("2024"), 1);
+        }
         
         // Get the exam with the largest key
         const previewExam = sortedExams[0];
