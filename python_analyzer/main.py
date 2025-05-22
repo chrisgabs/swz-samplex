@@ -8,8 +8,22 @@ from pathlib import Path
 def get_questions_from_file(file_path: str) -> str:
     with open(file_path, 'r', encoding='utf-8') as f:
         return f.read()
+    
+
+def clean_filenames(dir: str):
+    for file in os.listdir(dir):
+        if file.endswith(".json"):
+            if file == "similar_questions.json":
+                os.remove(os.path.join(dir, file))
+                continue
+            new_name = file.split("_")[0]
+            os.rename(os.path.join(dir, file), os.path.join(dir, new_name + ".json"))
+
 
 def main():
+    # for dir in os.listdir("./in/Surgery I"):
+    #     clean_filenames("./in/Surgery I/" + dir)
+    # return
     load_dotenv()
     gemini_api_key = os.getenv('GEMINI_API_KEY')
     parser = Parser(api_key=gemini_api_key)
