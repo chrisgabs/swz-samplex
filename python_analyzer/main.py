@@ -21,8 +21,8 @@ def clean_filenames(dir: str):
 
 
 def main():
-    # for dir in os.listdir("./in/Surgery I"):
-    #     clean_filenames("./in/Surgery I/" + dir)
+    # for dir in os.listdir("./in/Neurology I"):
+    #     clean_filenames("./in/Neurology I/" + dir)
     # return
     load_dotenv()
     gemini_api_key = os.getenv('GEMINI_API_KEY')

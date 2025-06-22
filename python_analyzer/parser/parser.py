@@ -25,22 +25,36 @@ def remove_trailing_object(text: str) -> str:
     return text
 
 
-def cleanup_json(json_text: str) -> str:
+def cleanup_json(input_text: str) -> str:
+    input = input_text
     try:
-        json_text = json.loads(json_text)
-        json_text = json.dumps(json_text)
+        input = json.loads(input)
+        input = json.dumps(input)
     except json.JSONDecodeError:
         try:
-            json_text = json5.loads(json_text)
-            json_text = json5.dumps(json_text)
+            input = json5.loads(input)
+            input = json5.dumps(input)
         except Exception as e:
             print("Error: Failed to parse JSON file")
             print(e)
-            json_text = None
-    return json_text
+    return input
 
 def get_file_name(file_path: str) -> str:
     return os.path.basename(file_path).split(".")[0]
+
+
+def prompt_with_retry(chat: genai.Chat, message: types.PartUnionDict | list[types.PartUnionDict]) -> types.GenerateContentResponse:
+    attempts = 0
+    max_attempts = 10
+    while attempts < max_attempts:
+        try:
+            response = chat.send_message(message=message)
+            return response
+        except Exception as e:
+            print("Error: Failed to send prompt", e.message)
+            attempts += 1
+            time.sleep(1)
+    raise Exception("Max retry attempts reached. Failed to send message.")
 
 class Parser:
     """
@@ -71,12 +85,10 @@ class Parser:
         prompts = 1
         continue_prompting = False
         print("sending initial prompt " + str(prompts))
-        response = chat.send_message(
-            message=[
-                types.Part(file_data=file_data),
-                types.Part(text=STRUCTURED_OUTPUT_PROMPT)
-            ]
-        )
+        response = prompt_with_retry(chat, [
+            types.Part(file_data=file_data),
+            types.Part(text=STRUCTURED_OUTPUT_PROMPT)
+        ])
 
         text = preprocess_text(response.text)
         if STOP_WORD in text:
@@ -93,7 +105,7 @@ class Parser:
         while not continue_prompting and prompts <= 5:
             prompts += 1
             print("sending prompt " + str(prompts))
-            response = chat.send_message(message=[
+            response = prompt_with_retry(chat, [
                 types.Part(text=CONTINUE_PROMPT),
             ])
             text = preprocess_text(response.text)
