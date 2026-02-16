@@ -58,8 +58,6 @@ def extract_key_concepts(all_questions):
     all_terms = []
     for q in all_questions:
         q_text = q["question"]
-        print("choices: ", q["choices"])
-        print("question: ", q)
         if q["choices"]:
             q_text += " "
             q_text += " ".join(q["choices"].values())

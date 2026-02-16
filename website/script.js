@@ -22,6 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup scroll to top button
     setupScrollToTopButton();
+    
+    // When unique-question filters are toggled, re-apply filters (search handler does full pipeline)
+    const hideUniqueFilter = document.getElementById('hideUniqueFilter');
+    const showOnlyUniqueFilter = document.getElementById('showOnlyUniqueFilter');
+    const searchInput = document.getElementById('searchInput');
+    if (hideUniqueFilter && searchInput) {
+        hideUniqueFilter.addEventListener('change', () => {
+            if (hideUniqueFilter.checked && showOnlyUniqueFilter) showOnlyUniqueFilter.checked = false;
+            searchInput.dispatchEvent(new Event('input'));
+        });
+    }
+    if (showOnlyUniqueFilter && searchInput) {
+        showOnlyUniqueFilter.addEventListener('change', () => {
+            if (showOnlyUniqueFilter.checked && hideUniqueFilter) hideUniqueFilter.checked = false;
+            searchInput.dispatchEvent(new Event('input'));
+        });
+    }
 });
 
 function addExamPillStyles() {
@@ -270,6 +287,9 @@ function processActiveBatch(batch) {
     
     // Setup exam filters for this batch
     setupExamFilters(questions);
+    
+    // Setup variation-count filters for this batch
+    setupVariationFilters(questions);
     
     // Display the questions (will be filtered by the active exam filters)
     displayQuestions(questions);
@@ -957,6 +977,110 @@ function analyzeQuestionSimilarity(questionGroup) {
     return analysis;
 }
 
+/** Returns the set of selected variation counts from the UI (e.g. {1, 2, 3}). */
+function getSelectedVariationCounts() {
+    const selected = new Set();
+    document.querySelectorAll('#variationFilters button[data-variation-count][data-selected="true"]').forEach(btn => {
+        selected.add(parseInt(btn.dataset.variationCount, 10));
+    });
+    return selected;
+}
+
+function setupVariationFilters(questions) {
+    const container = document.getElementById('variationFilters');
+    if (!container) return;
+    container.innerHTML = '';
+    container.className = 'flex flex-wrap gap-2 items-center';
+
+    const variationCounts = questions.map(q => Object.keys(q.question).length).filter(n => n >= 1);
+    const maxVariations = variationCounts.length ? Math.max(...variationCounts) : 1;
+    const allCounts = new Set();
+    for (let n = 1; n <= maxVariations; n++) allCounts.add(n);
+
+    const toggleAllBtn = document.createElement('button');
+    toggleAllBtn.type = 'button';
+    toggleAllBtn.id = 'toggleAllVariations';
+    toggleAllBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm mr-2';
+    toggleAllBtn.style.backgroundColor = 'rgba(126, 140, 105, 0.2)';
+    toggleAllBtn.style.color = 'var(--primary)';
+    toggleAllBtn.textContent = 'Deselect All';
+    toggleAllBtn.dataset.state = 'all-selected';
+    container.appendChild(toggleAllBtn);
+
+    for (let n = 1; n <= maxVariations; n++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm';
+        btn.style.backgroundColor = 'var(--primary)';
+        btn.style.color = 'white';
+        btn.textContent = String(n);
+        btn.dataset.variationCount = String(n);
+        btn.dataset.selected = 'true';
+        btn.dataset.bgColor = 'var(--primary)';
+        container.appendChild(btn);
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    function triggerRefresh() {
+        if (searchInput) searchInput.dispatchEvent(new Event('input'));
+    }
+
+    function updateToggleAllState() {
+        const selected = getSelectedVariationCounts();
+        if (selected.size === maxVariations) {
+            toggleAllBtn.textContent = 'Deselect All';
+            toggleAllBtn.dataset.state = 'all-selected';
+        } else if (selected.size === 0) {
+            toggleAllBtn.textContent = 'Select All';
+            toggleAllBtn.dataset.state = 'none-selected';
+        } else {
+            toggleAllBtn.textContent = 'Deselect All';
+            toggleAllBtn.dataset.state = 'all-selected';
+        }
+    }
+
+    toggleAllBtn.addEventListener('click', () => {
+        const state = toggleAllBtn.dataset.state;
+        container.querySelectorAll('button[data-variation-count]').forEach(b => {
+            if (b === toggleAllBtn) return;
+            if (state === 'all-selected') {
+                b.dataset.selected = 'false';
+                b.style.backgroundColor = '';
+                b.style.color = '';
+                b.classList.add('bg-gray-200', 'text-gray-700');
+            } else {
+                b.dataset.selected = 'true';
+                b.style.backgroundColor = 'var(--primary)';
+                b.style.color = 'white';
+                b.classList.remove('bg-gray-200', 'text-gray-700');
+            }
+        });
+        toggleAllBtn.dataset.state = state === 'all-selected' ? 'none-selected' : 'all-selected';
+        toggleAllBtn.textContent = toggleAllBtn.dataset.state === 'all-selected' ? 'Deselect All' : 'Select All';
+        updateToggleAllState();
+        triggerRefresh();
+    });
+
+    container.querySelectorAll('button[data-variation-count]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const selected = this.dataset.selected === 'true';
+            if (selected) {
+                this.dataset.selected = 'false';
+                this.style.backgroundColor = '';
+                this.style.color = '';
+                this.classList.add('bg-gray-200', 'text-gray-700');
+            } else {
+                this.dataset.selected = 'true';
+                this.style.backgroundColor = 'var(--primary)';
+                this.style.color = 'white';
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+            }
+            updateToggleAllState();
+            triggerRefresh();
+        });
+    });
+}
+
 function setupExamFilters(questions) {
     // Get all unique exams
     const allExams = new Set();
@@ -1029,7 +1153,25 @@ function setupExamFilters(questions) {
         // Get the current batch data
         const currentSubject = subjects[currentSubjectIndex];
         const currentBatch = currentSubject?.batches[currentBatchIndex];
-        const currentQuestions = currentBatch?.similar_questions || questions;
+        let currentQuestions = currentBatch?.similar_questions || questions;
+        
+        // Filter by unique: show only unique, hide unique, or show all
+        const showOnlyUniqueEl = document.getElementById('showOnlyUniqueFilter');
+        const hideUniqueEl = document.getElementById('hideUniqueFilter');
+        if (showOnlyUniqueEl && showOnlyUniqueEl.checked) {
+            currentQuestions = currentQuestions.filter(q => q.unique);
+        } else if (hideUniqueEl && hideUniqueEl.checked) {
+            currentQuestions = currentQuestions.filter(q => !q.unique);
+        }
+        
+        // Filter by selected variation counts (show only if question's variation count is selected)
+        const selectedVariations = getSelectedVariationCounts();
+        const variationFilterActive = document.querySelectorAll('#variationFilters button[data-variation-count]').length > 0;
+        if (variationFilterActive) {
+            currentQuestions = selectedVariations.size > 0
+                ? currentQuestions.filter(q => selectedVariations.has(Object.keys(q.question).length))
+                : [];
+        }
         
         // Filter questions - show questions that have at least one exam from the selected exams
         const filtered = currentQuestions.filter(q => {
@@ -1152,6 +1294,26 @@ function setupSearch(questions) {
         
         // Get the questions from the current batch
         let currentQuestions = currentBatch?.similar_questions || questions;
+        
+        // Filter by unique: show only unique, hide unique, or show all
+        const showOnlyUniqueEl = document.getElementById('showOnlyUniqueFilter');
+        const hideUniqueEl = document.getElementById('hideUniqueFilter');
+        if (showOnlyUniqueEl && showOnlyUniqueEl.checked) {
+            currentQuestions = currentQuestions.filter(q => q.unique);
+        } else if (hideUniqueEl && hideUniqueEl.checked) {
+            currentQuestions = currentQuestions.filter(q => !q.unique);
+        }
+        
+        // Filter by selected variation counts
+        const selectedVariations = getSelectedVariationCounts();
+        const variationFilterActive = document.querySelectorAll('#variationFilters button[data-variation-count]').length > 0;
+        if (variationFilterActive) {
+            if (selectedVariations.size === 0) {
+                currentQuestions = [];
+            } else {
+                currentQuestions = currentQuestions.filter(q => selectedVariations.has(Object.keys(q.question).length));
+            }
+        }
         
         // Get currently selected exams
         const selectedExams = new Set();

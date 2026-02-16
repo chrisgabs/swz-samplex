@@ -95,6 +95,23 @@
                     </svg>
                     Quick Filters:
                 </h3>
+                <div class="flex flex-wrap gap-6 mb-3">
+                    <label class="flex items-center gap-2 cursor-pointer w-fit" style="color: var(--text-dark);">
+                        <input type="checkbox" id="hideUniqueFilter" class="w-4 h-4 rounded border-gray-300 focus:ring-2" style="accent-color: var(--primary);">
+                        <span class="text-sm font-medium">Hide unique questions</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer w-fit" style="color: var(--text-dark);">
+                        <input type="checkbox" id="showOnlyUniqueFilter" class="w-4 h-4 rounded border-gray-300 focus:ring-2" style="accent-color: var(--primary);">
+                        <span class="text-sm font-medium">Show only unique questions</span>
+                    </label>
+                </div>
+                <div class="mb-4">
+                    <div class="text-sm font-medium mb-2" style="color: var(--text-dark);">Number of variations:</div>
+                    <div class="flex flex-wrap gap-2 items-center" id="variationFilters">
+                        <span class="text-gray-400 italic text-sm">Loading...</span>
+                    </div>
+                </div>
+                <div class="text-sm font-medium mb-2" style="color: var(--text-dark);">Exams:</div>
                 <div class="flex flex-wrap gap-2" id="examFilters">
                     <!-- Exam filters will be added here dynamically -->
                     <span class="text-gray-400 italic">Loading exam filters...</span>
@@ -145,6 +162,7 @@
         "similar_questions": [
           {
             "number": 1,
+            "unique": true,
             "question": { "exam1": "Question from exam1", "exam2": "Similar question from exam2" },
             "choices": { ... },
             "answer": { ... },

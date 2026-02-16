@@ -22,7 +22,7 @@ def clean_filenames(dir: str):
 
 def main():
     # for dir in os.listdir("./out/MEDICINE_FINAL"):
-    # clean_filenames("./out/MEDICINE_FINAL/")
+    # clean_filenames("./in/SURGERY")
     # return
     load_dotenv()
     api_key = os.getenv("OPENROUTER_API_KEY")
