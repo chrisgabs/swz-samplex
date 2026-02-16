@@ -21,12 +21,12 @@ def clean_filenames(dir: str):
 
 
 def main():
-    # for dir in os.listdir("./in/Neurology I"):
-    #     clean_filenames("./in/Neurology I/" + dir)
+    # for dir in os.listdir("./out/MEDICINE_FINAL"):
+    # clean_filenames("./out/MEDICINE_FINAL/")
     # return
     load_dotenv()
-    gemini_api_key = os.getenv('GEMINI_API_KEY')
-    parser = Parser(api_key=gemini_api_key)
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    parser = Parser(api_key=api_key)
 
     batch_name = input("Enter batch name: ")
     get_from_file = input("Get questions from file? (y/n): ")
@@ -42,6 +42,8 @@ def main():
         
     exams: list[Exam] = []
     for file in os.listdir(IN_DIR):
+        if not (file.endswith(".pdf") or file.endswith(".json")):
+            continue
         exam = Exam(
             name=Path(file).stem,
             questions=""

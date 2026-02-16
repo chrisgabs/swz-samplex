@@ -7,6 +7,7 @@ import re
 from collections import defaultdict, Counter
 import difflib
 from dataclasses import dataclass
+from typing import Any
 
 def preprocess_text(text):
     """Preprocess text for similarity comparison."""
@@ -56,7 +57,12 @@ def extract_key_concepts(all_questions):
     # Extract all terms from all questions
     all_terms = []
     for q in all_questions:
-        q_text = q["question"] + " " + " ".join(q["choices"].values())
+        q_text = q["question"]
+        print("choices: ", q["choices"])
+        print("question: ", q)
+        if q["choices"]:
+            q_text += " "
+            q_text += " ".join(q["choices"].values())
         all_terms.extend(extract_domain_specific_terms(q_text))
     
     # Count term frequencies
@@ -156,6 +162,15 @@ def clean_question(q: dict) -> dict:
     q["question"] = q.get("question", "") or ""
     q["number"] = q.get("number", -1) or -1
     q["rationale"] = q.get("rationale", "") or ""
+
+    if isinstance(q["choices"], list):
+        dict_choices = {}
+        keys = ["a", "b", "c", "d"]
+        for i, c in enumerate[Any](q["choices"]):
+            dict_choices[keys[i]] = c
+        print("converted choices to dict for question: ", q["number"], " - ", q["question"], - "source_exam: ", q["source_exam"])
+        q["choices"] = dict_choices
+
     return q
 
 def find_similar_questions(examinations: list[Exam]):
@@ -218,46 +233,72 @@ def find_similar_questions(examinations: list[Exam]):
         if len(group) >= 2 and len(set(q['source_exam'] for q in group)) >= 2:
             similar_groups.append(group)
 
-    return format_output(similar_groups)
+    return format_output(similar_groups, questions)
 
-def format_output(similar_groups):
-    """Format the output according to the specified structure."""
+def format_output(similar_groups, all_questions):
+    """Format the output according to the specified structure.
+    Includes both similar question groups (unique=False) and questions that
+    do not appear in other exams (unique=True).
+    """
     results = []
-    
+
+    # Set of (source_exam, number) for questions that appear in a similar group
+    questions_in_groups = set()
+    for group in similar_groups:
+        for question in group:
+            questions_in_groups.add((question["source_exam"], question["number"]))
+
+    def make_result_entry(question, unique_flag):
+        exam_name = question["source_exam"]
+        return {
+            "number": len(results) + 1,
+            "unique": unique_flag,
+            "question": {exam_name: question["question"]},
+            "choices": {exam_name: question["choices"]},
+            "answer": {exam_name: question["answer"]},
+            "rationale": {exam_name: question["rationale"]},
+            "reference": {
+                exam_name: {
+                    "number": question["number"],
+                    "section": question["section"],
+                    "reference": question["reference"],
+                },
+            },
+        }
+
+    # Add similar groups with unique=False
     for group in similar_groups:
         result = {
             "number": len(results) + 1,
+            "unique": False,
             "question": {},
             "choices": {},
             "answer": {},
             "rationale": {},
-            "reference": {}
+            "reference": {},
         }
-        
+
         for question in group:
-            exam_name = question['source_exam']
-            
-            # Add question text
+            exam_name = question["source_exam"]
+
             result["question"][exam_name] = question["question"]
-            
-            # Add choices
             result["choices"][exam_name] = question["choices"]
-            
-            # Add answer
             result["answer"][exam_name] = question["answer"]
-            
-            # Add reference
             result["reference"][exam_name] = {
                 "number": question["number"],
                 "section": question["section"],
-                "reference": question["reference"]
+                "reference": question["reference"],
             }
-
-            # Add rationale
             result["rationale"][exam_name] = question["rationale"]
-            
+
         results.append(result)
-    
+
+    # Add unique questions (not in any similar group across exams) with unique=True
+    for question in all_questions:
+        key = (question["source_exam"], question["number"])
+        if key not in questions_in_groups:
+            results.append(make_result_entry(question, True))
+
     return results
 
 def main():
@@ -290,8 +331,8 @@ def main():
     print(f"Found {len(results)} groups of similar questions across {len(exams)} examinations.")
     print(f"Results saved to {output_file}")
     
-    # Display some statistics
-    exams_per_group = [len(set(q['source_exam'] for q in group)) for group in results]
+    # Display some statistics (similar groups only)
+    exams_per_group = [len(r["question"]) for r in results if not r.get("unique", False)]
     if exams_per_group:
         avg_exams_per_group = sum(exams_per_group) / len(exams_per_group)
         print(f"Average number of examinations per similar question group: {avg_exams_per_group:.2f}")
